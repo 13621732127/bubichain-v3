@@ -77,6 +77,7 @@ namespace bubi {
 		uint32_t max_ledger_per_message_;
 		uint32_t max_trans_in_memory_;
 		uint32_t max_apply_ledger_per_round_;
+		uint32_t max_tx_limit_size_;
 		bool test_model_;
 		std::string genesis_account_;
 		utils::StringList hardfork_points_;

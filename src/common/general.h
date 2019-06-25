@@ -68,7 +68,7 @@ namespace bubi {
 		const static char *METADATA_PREFIX;
 
 		const static int32_t TRANSACTION_LIMIT_SIZE;
-		const static int32_t TXSET_LIMIT_SIZE;
+	    static int32_t TXSET_LIMIT_SIZE;
 		const static int32_t ACCOUNT_LIMIT_SIZE;
 		const static int PEER_DB_COUNT = 5000;
 

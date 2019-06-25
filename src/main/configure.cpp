@@ -133,6 +133,7 @@ namespace bubi {
 		Configure::GetValue(value, "max_ledger_per_message", max_ledger_per_message_);
 		Configure::GetValue(value, "max_apply_ledger_per_round", max_apply_ledger_per_round_);
 		Configure::GetValue(value, "max_trans_in_memory", max_trans_in_memory_);
+		Configure::GetValue(value, "max_trans_limit_size", max_tx_limit_size_);
 		Configure::GetValue(value, "test_model", test_model_);
 		Configure::GetValue(value, "genesis_account", genesis_account_);
 		Configure::GetValue(value, "hardfork_points", hardfork_points_);
@@ -141,6 +142,8 @@ namespace bubi {
 			|| max_trans_in_memory_ / max_apply_ledger_per_round_ == 0) {
 			return false;
 		}
+
+		General::TXSET_LIMIT_SIZE = max_tx_limit_size_ * utils::BYTES_PER_MEGA;
 		return true;
 	}
 

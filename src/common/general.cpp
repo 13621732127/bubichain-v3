@@ -68,7 +68,7 @@ namespace bubi {
 	const char *General::METADATA_PREFIX = "meta";
 
 	const int32_t General::TRANSACTION_LIMIT_SIZE = 4 * utils::BYTES_PER_MEGA;
-	const int32_t General::TXSET_LIMIT_SIZE = 32 * utils::BYTES_PER_MEGA;
+    int32_t General::TXSET_LIMIT_SIZE = 32 * utils::BYTES_PER_MEGA;
 	const int32_t General::ACCOUNT_LIMIT_SIZE = 16 * utils::BYTES_PER_MEGA;
 
 
