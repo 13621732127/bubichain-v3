@@ -41,7 +41,7 @@
 		"max_trans_per_ledger": 1000,
 		"max_ledger_per_message": 5,
 		"max_trans_in_memory": 2000,
-		"max_trans_limit_size": 32,
+		"max_trans_limit_size": 64,
 		"max_apply_ledger_per_round": 3,
 		"hardfork_points": []
 	},

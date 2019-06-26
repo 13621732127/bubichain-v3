@@ -143,7 +143,7 @@ namespace bubi {
 			return false;
 		}
 
-		General::TXSET_LIMIT_SIZE = max_tx_limit_size_ * utils::BYTES_PER_MEGA;
+	    General::TXSET_LIMIT_SIZE = max_tx_limit_size_ * utils::BYTES_PER_MEGA;
 		return true;
 	}
 
