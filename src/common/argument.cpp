@@ -167,6 +167,15 @@ namespace bubi {
 
 	void Argument::TestSM2(){
 		PrivateKey priv_key(SIGNTYPE_CFCASM2);
+
+		int64_t time0 = utils::Timestamp().HighResolution();
+		for (int i = 0; i < 10000; i++){
+			PrivateKey priv_key1(SIGNTYPE_CFCASM2);
+		}
+		int64_t time1 = utils::Timestamp().HighResolution();
+
+		LOG_ERROR("Perform the sm2 to generate the secret key 10000 times for (" FMT_I64 ")  ms", time1 - time0);
+
 		std::string public_key = priv_key.GetBase16PublicKey();
 		std::string private_key = priv_key.GetBase16PrivateKey();
 		std::string data = "bumo is very good";
@@ -174,11 +183,11 @@ namespace bubi {
 
 		std::string signature = priv_key.Sign(data);
 
-		int64_t time0 = utils::Timestamp().HighResolution();
+		time0 = utils::Timestamp().HighResolution();
 		for (int i = 0; i < 10000;i++){
 			priv_key.Sign(data);
 		}
-		int64_t time1 = utils::Timestamp().HighResolution();
+		time1 = utils::Timestamp().HighResolution();
 
 		LOG_ERROR("Perform the sm2 signature 10000 times for (" FMT_I64 ")  ms", time1 - time0);
 		PublicKey obj_public_key(public_key);
