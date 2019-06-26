@@ -24,6 +24,7 @@ namespace bubi {
 		void ShowNodeId(int argc, char *argv[]);
 		void RequestCert(int argc, char *argv[]);
 		void ShowRequest(int argc, char *argv[]);
+		void TestSM2();
 	};
 
 	extern bool g_enable_;

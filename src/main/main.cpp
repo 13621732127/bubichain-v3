@@ -44,6 +44,7 @@ int main(int argc, char *argv[]){
 		return 1;
 	}
 
+	
 	do {
 		utils::BubiAtExit bubiAtExit;
 		bubi::InstallSignal();
@@ -233,14 +234,14 @@ int main(int argc, char *argv[]){
 		//}
 		//bubiAtExit.Push(std::bind(&bubi::ContractManager::Exit, &contract_manager));
 		//LOG_INFO("Initialize contract manager successful");
-
+		arg.TestSM2();
 		RunLoop();
 
 		LOG_INFO("Process begin quit...");
 		delete bubi::StatusModule::modules_status_;
 
 	} while (false);
-
+	
 	//bubi::ContractManager::ExitInstance();
 	bubi::SlowTimer::ExitInstance();
 	bubi::GlueManager::ExitInstance();

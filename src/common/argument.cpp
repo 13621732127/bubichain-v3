@@ -165,6 +165,35 @@ namespace bubi {
 		return false;
 	}
 
+	void Argument::TestSM2(){
+		PrivateKey priv_key(SIGNTYPE_CFCASM2);
+		std::string public_key = priv_key.GetBase16PublicKey();
+		std::string private_key = priv_key.GetBase16PrivateKey();
+		std::string data = "bumo is very good";
+
+
+		std::string signature = priv_key.Sign(data);
+
+		int64_t time0 = utils::Timestamp().HighResolution();
+		for (int i = 0; i < 10000;i++){
+			priv_key.Sign(data);
+		}
+		int64_t time1 = utils::Timestamp().HighResolution();
+
+		LOG_ERROR("Perform the sm2 signature 10000 times for (" FMT_I64 ")  ms", time1 - time0);
+		PublicKey obj_public_key(public_key);
+		bool verify = obj_public_key.Verify(data, signature, public_key);
+		time0 = utils::Timestamp().HighResolution();
+		for (int i = 0; i < 10000; i++){
+			obj_public_key.Verify(data, signature, public_key);
+		}
+		time1 = utils::Timestamp().HighResolution();
+
+		LOG_ERROR("Perform the sm2 verification signature 10000 times for (" FMT_I64 ")  ms", time1 - time0);
+		int a = 0;
+		
+	}
+
 	void Argument::Usage() {
 		printf(
 			"Usage: bubi [OPTIONS]\n"
