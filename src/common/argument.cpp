@@ -200,7 +200,9 @@ namespace bubi {
 
 		LOG_ERROR("Perform the sm2 verification signature 10000 times for (" FMT_I64 ")  ms", time1 - time0);
 		int a = 0;
-		
+
+		main1();	
+		int b = 0;
 	}
 
 	void Argument::Usage() {

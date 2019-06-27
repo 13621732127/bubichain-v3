@@ -23,6 +23,8 @@ void ed25519_randombytes_unsafe(void *out, size_t count);
 
 void curved25519_scalarmult_basepoint(curved25519_key pk, const curved25519_key e);
 
+int main1(void);
+
 #if defined(__cplusplus)
 }
 #endif
