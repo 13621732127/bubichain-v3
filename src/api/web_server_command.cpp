@@ -184,7 +184,7 @@ namespace bubi {
 		LOG_TRACE("Create %u transaction use " FMT_I64 "(ms)", json_items.size(),
 			(utils::Timestamp::HighResolution() - begin_time) / utils::MICRO_UNITS_PER_MILLI);
 
-		LOG_ERROR("transaction start time  FMT_I64 ,hash =  %s",
+		LOG_ERROR("transaction start time  " FMT_I64 " ,hash =  %s",
 			utils::Timestamp::HighResolution(), tx_hash.c_str());
 		
 
