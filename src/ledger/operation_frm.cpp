@@ -528,6 +528,7 @@ namespace bubi {
 					payment.dest_address(),
 					source_account_->GetAccountAddress(),
 					transaction_->GetTransactionString(),
+					transaction_->GetContentHash(),
 					index_,
 					transaction_->ledger_->GetConsensusValueString(),
 					err_msg
@@ -649,6 +650,7 @@ namespace bubi {
 					ope.dest_address(),
 					source_account_->GetAccountAddress(),
 					transaction_->GetTransactionString(),
+					transaction_->GetContentHash(),
 					index_,
 					transaction_->ledger_->GetConsensusValueString(),
 					err_msg)) {

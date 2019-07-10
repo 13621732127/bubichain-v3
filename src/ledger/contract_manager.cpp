@@ -1,4 +1,5 @@
 #include <utils/logger.h>
+#include <utils/base64.h>
 #include <common/pb2json.h>
 #include <api/websocket_server.h>
 #include "contract_manager.h"
@@ -15,6 +16,7 @@ namespace bubi{
 	const std::string ContractManager::trigger_tx_name_ = "trigger";
 	const std::string ContractManager::trigger_tx_index_name_ = "triggerIndex";
 	const std::string ContractManager::this_header_name_ = "consensusValue";
+	const std::string ContractManager::tx_hash_ = "hash";
 
 	v8::Platform* ContractManager::platform_ = nullptr;
 	v8::Isolate::CreateParams ContractManager::create_params_;
@@ -94,6 +96,58 @@ namespace bubi{
 			.ToLocalChecked(),
 			v8::FunctionTemplate::New(isolate, ContractManager::Include));
 
+		//add 3001 version
+		if (CHECK_VERSION_GT_3001) {
+			global->Set(
+				v8::String::NewFromUtf8(isolate, "stoI64Check", v8::NewStringType::kNormal)
+				.ToLocalChecked(),
+				v8::FunctionTemplate::New(isolate, ContractManager::CallBackStoI64Check));
+			global->Set(
+				v8::String::NewFromUtf8(isolate, "int64Add", v8::NewStringType::kNormal)
+				.ToLocalChecked(),
+				v8::FunctionTemplate::New(isolate, ContractManager::CallBackInt64Add));
+			global->Set(
+				v8::String::NewFromUtf8(isolate, "int64Sub", v8::NewStringType::kNormal)
+				.ToLocalChecked(),
+				v8::FunctionTemplate::New(isolate, ContractManager::CallBackInt64Sub));
+			global->Set(
+				v8::String::NewFromUtf8(isolate, "int64Mul", v8::NewStringType::kNormal)
+				.ToLocalChecked(),
+				v8::FunctionTemplate::New(isolate, ContractManager::CallBackInt64Mul));
+			global->Set(
+				v8::String::NewFromUtf8(isolate, "int64Mod", v8::NewStringType::kNormal)
+				.ToLocalChecked(),
+				v8::FunctionTemplate::New(isolate, ContractManager::CallBackInt64Mod));
+			global->Set(
+				v8::String::NewFromUtf8(isolate, "int64Div", v8::NewStringType::kNormal)
+				.ToLocalChecked(),
+				v8::FunctionTemplate::New(isolate, ContractManager::CallBackInt64Div));
+			global->Set(
+				v8::String::NewFromUtf8(isolate, "int64Compare", v8::NewStringType::kNormal)
+				.ToLocalChecked(),
+				v8::FunctionTemplate::New(isolate, ContractManager::CallBackInt64Compare));
+			global->Set(
+				v8::String::NewFromUtf8(isolate, "assert", v8::NewStringType::kNormal)
+				.ToLocalChecked(),
+				v8::FunctionTemplate::New(isolate, ContractManager::CallBackAssert));
+			global->Set(
+				v8::String::NewFromUtf8(isolate, "addressCheck", v8::NewStringType::kNormal)
+				.ToLocalChecked(),
+				v8::FunctionTemplate::New(isolate, ContractManager::CallBackAddressValidCheck));
+			global->Set(
+				v8::String::NewFromUtf8(isolate, "sha256", v8::NewStringType::kNormal)
+				.ToLocalChecked(),
+				v8::FunctionTemplate::New(isolate, ContractManager::CallBackSha256));
+			global->Set(
+				v8::String::NewFromUtf8(isolate, "ecVerify", v8::NewStringType::kNormal)
+				.ToLocalChecked(),
+				v8::FunctionTemplate::New(isolate, ContractManager::CallBackVerify));
+			global->Set(
+				v8::String::NewFromUtf8(isolate, "toAddress", v8::NewStringType::kNormal)
+				.ToLocalChecked(),
+				v8::FunctionTemplate::New(isolate, ContractManager::CallBackToAddress));
+		}
+
 		return v8::Context::New(isolate, NULL, global);
 	}
 
@@ -156,6 +210,11 @@ namespace bubi{
 		auto string_contractor = v8::String::NewFromUtf8(isolate_, "", v8::NewStringType::kNormal).ToLocalChecked();
 		context->Global()->Set(context, v8::String::NewFromUtf8(isolate_, this_address_.c_str(), v8::NewStringType::kNormal).ToLocalChecked(), string_contractor);
 
+		if (CHECK_VERSION_GT_3001) {
+			auto string_tx_hash = v8::String::NewFromUtf8(isolate_, "", v8::NewStringType::kNormal).ToLocalChecked();
+			context->Global()->Set(context, v8::String::NewFromUtf8(isolate_, tx_hash_.c_str(), v8::NewStringType::kNormal).ToLocalChecked(), string_tx_hash);
+		}
+
 		auto str_json_v8 = v8::String::NewFromUtf8(isolate_, "{}", v8::NewStringType::kNormal).ToLocalChecked();
 		auto tx_v8 = v8::JSON::Parse(str_json_v8);
 		context->Global()->Set(context,
@@ -213,6 +272,7 @@ namespace bubi{
 		const std::string& token,
 		const std::string& sender, 
 		const std::string& trigger_tx, 
+		const std::string& tx_hash,
 		int32_t index,
 		const std::string& consensus_value,
 		std::string& error_msg)
@@ -238,6 +298,13 @@ namespace bubi{
 		context->Global()->Set(context,
 			v8::String::NewFromUtf8(isolate_, this_address_.c_str(), v8::NewStringType::kNormal).ToLocalChecked(),
 			string_contractor);
+
+		if (CHECK_VERSION_GT_3001) {
+			auto string_tx_hash = v8::String::NewFromUtf8(isolate_, tx_hash.c_str(), v8::NewStringType::kNormal).ToLocalChecked();
+			context->Global()->Set(context,
+				v8::String::NewFromUtf8(isolate_, tx_hash_.c_str(), v8::NewStringType::kNormal).ToLocalChecked(),
+				string_tx_hash);
+		}
 
 
 		auto str_json_v8 = v8::String::NewFromUtf8(isolate_, trigger_tx.c_str(), v8::NewStringType::kNormal).ToLocalChecked();
@@ -746,6 +813,555 @@ namespace bubi{
 		void* ptr = field->Value();
 		return static_cast<ContractManager*>(ptr);
 	}
+
+
+	//Add 3002 version
+	//str to int64 check
+	void ContractManager::CallBackStoI64Check(const v8::FunctionCallbackInfo<v8::Value>& args){
+		std::string error_desc;
+		do {
+			if (args.Length() != 1) {
+				error_desc = "Parameter number error";
+				break;
+			}
+			v8::HandleScope handle_scope(args.GetIsolate());
+
+			if (!args[0]->IsString()) {
+				error_desc = "Contract execution error, stoI64Check, parameter 0 should be a String or Number";
+				break;
+			}
+
+			std::string arg0 = ToCString(v8::String::Utf8Value(args[0]));
+
+			int64_t iarg0 = 0;
+			if (!utils::String::SafeStoi64(arg0, iarg0)) {
+				error_desc = "Contract execution error, stoI64Check, parameter 0 illegal, maybe exceed the limit value of int64.";
+				break;
+			}
+
+			args.GetReturnValue().Set(true);
+			return;
+		} while (false);
+		args.GetReturnValue().Set(false);
+	}
+
+	//Int64 add
+	void ContractManager::CallBackInt64Add(const v8::FunctionCallbackInfo<v8::Value>& args){
+		std::string error_desc;
+		do {
+			if (args.Length() != 2) {
+				error_desc = "Parameter number error";
+				break;
+			}
+			v8::HandleScope handle_scope(args.GetIsolate());
+
+			if (!args[0]->IsString() && !args[0]->IsNumber()) {
+				error_desc = "Contract execution error, int64Add, parameter 0 should be a String or Number";
+				break;
+			}
+			if (!args[1]->IsString() && !args[1]->IsNumber()) {
+				error_desc = "Contract execution error, int64Add, parameter 1 should be a String or Number";
+				break;
+			}
+
+			std::string arg0 = ToCString(v8::String::Utf8Value(args[0]));
+			std::string arg1 = ToCString(v8::String::Utf8Value(args[1]));
+			int64_t iarg0 = 0;
+			int64_t iarg1 = 0;
+
+			if (!utils::String::SafeStoi64(arg0, iarg0)) {
+				error_desc = "Contract execution error, int64Add, parameter 0 illegal, maybe exceed the limit value of int64.";
+				break;
+			}
+
+			if (!utils::String::SafeStoi64(arg1, iarg1)) {
+				error_desc = "Contract execution error, int64Add, parameter 1 illegal, maybe exceed the limit value of int64.";
+				break;
+			}
+
+			if (!utils::SafeIntAdd(iarg0, iarg1, iarg0)) {
+				error_desc = "Contract execution error, int64Add, parameter 0 + parameter 1 overflowed";
+				break;
+			}
+
+			args.GetReturnValue().Set(v8::String::NewFromUtf8(
+				args.GetIsolate(), utils::String::ToString(iarg0).c_str(), v8::NewStringType::kNormal).ToLocalChecked());
+			return;
+		} while (false);
+		LOG_ERROR("%s", error_desc.c_str());
+		args.GetIsolate()->ThrowException(
+			v8::String::NewFromUtf8(args.GetIsolate(), error_desc.c_str(),
+			v8::NewStringType::kNormal).ToLocalChecked());
+	}
+
+	//Int64 sub
+	void ContractManager::CallBackInt64Sub(const v8::FunctionCallbackInfo<v8::Value>& args){
+		std::string error_desc;
+		do {
+			if (args.Length() != 2) {
+				error_desc = "Parameter number error";
+				break;
+			}
+			v8::HandleScope handle_scope(args.GetIsolate());
+
+			if (!args[0]->IsString() && !args[0]->IsNumber()) {
+				error_desc = "Contract execution error, int64Sub, parameter 0 should be a String or Number";
+				break;
+			}
+			if (!args[1]->IsString() && !args[1]->IsNumber()) {
+				error_desc = "Contract execution error, int64Sub, parameter 1 should be a String or Number";
+				break;
+			}
+
+			std::string arg0 = ToCString(v8::String::Utf8Value(args[0]));
+			std::string arg1 = ToCString(v8::String::Utf8Value(args[1]));
+			int64_t iarg0 = 0;
+			int64_t iarg1 = 0;
+
+			if (!utils::String::SafeStoi64(arg0, iarg0)) {
+				error_desc = "Contract execution error, int64Sub, parameter 0 illegal, maybe exceed the limit value of int64.";
+				break;
+			}
+
+			if (!utils::String::SafeStoi64(arg1, iarg1)) {
+				error_desc = "Contract execution error, int64Sub, parameter 1 illegal, maybe exceed the limit value of int64.";
+				break;
+			}
+
+			if (!utils::SafeIntSub(iarg0, iarg1, iarg0)) {
+				error_desc = "Contract execution error, int64Sub, parameter 0 - parameter 1 overflowed";
+				break;
+			}
+
+			args.GetReturnValue().Set(v8::String::NewFromUtf8(
+				args.GetIsolate(), utils::String::ToString(iarg0).c_str(), v8::NewStringType::kNormal).ToLocalChecked());
+			return;
+		} while (false);
+		LOG_ERROR("%s", error_desc.c_str());
+		args.GetIsolate()->ThrowException(
+			v8::String::NewFromUtf8(args.GetIsolate(), error_desc.c_str(),
+			v8::NewStringType::kNormal).ToLocalChecked());
+	}
+
+	//Int64 mul
+	void ContractManager::CallBackInt64Mul(const v8::FunctionCallbackInfo<v8::Value>& args){
+		std::string error_desc;
+		do {
+			if (args.Length() != 2) {
+				error_desc = "Parameter number error";
+				break;
+			}
+			v8::HandleScope handle_scope(args.GetIsolate());
+
+			if (!args[0]->IsString() && !args[0]->IsNumber()) {
+				error_desc = "Contract execution error, int64Mul, parameter 0 should be a String or Number";
+				break;
+			}
+			if (!args[1]->IsString() && !args[1]->IsNumber()) {
+				error_desc = "Contract execution error, int64Mul, parameter 1 should be a String or Number";
+				break;
+			}
+
+			std::string arg0 = ToCString(v8::String::Utf8Value(args[0]));
+			std::string arg1 = ToCString(v8::String::Utf8Value(args[1]));
+			int64_t iarg0 = 0;
+			int64_t iarg1 = 0;
+
+			if (!utils::String::SafeStoi64(arg0, iarg0)) {
+				error_desc = "Contract execution error, int64Mul, parameter 0 illegal, maybe exceed the limit value of int64.";
+				break;
+			}
+
+			if (!utils::String::SafeStoi64(arg1, iarg1)) {
+				error_desc = "Contract execution error, int64Mul, parameter 1 illegal, maybe exceed the limit value of int64.";
+				break;
+			}
+
+			if (!utils::SafeIntMul(iarg0, iarg1, iarg0)) {
+				error_desc = "Contract execution error, int64Mul, parameter 0 * parameter 1 overflowed";
+				break;
+			}
+
+			args.GetReturnValue().Set(v8::String::NewFromUtf8(
+				args.GetIsolate(), utils::String::ToString(iarg0).c_str(), v8::NewStringType::kNormal).ToLocalChecked());
+			return;
+		} while (false);
+		LOG_ERROR("%s", error_desc.c_str());
+		args.GetIsolate()->ThrowException(
+			v8::String::NewFromUtf8(args.GetIsolate(), error_desc.c_str(),
+			v8::NewStringType::kNormal).ToLocalChecked());
+	}
+
+	//Int64 mod
+	void ContractManager::CallBackInt64Mod(const v8::FunctionCallbackInfo<v8::Value>& args){
+		std::string error_desc;
+		do {
+			if (args.Length() != 2) {
+				error_desc = "Parameter number error";
+				break;
+			}
+			v8::HandleScope handle_scope(args.GetIsolate());
+
+			if (!args[0]->IsString() && !args[0]->IsNumber()) {
+				error_desc = "Contract execution error, int64Mod, parameter 0 should be a String or Number";
+				break;
+			}
+			if (!args[1]->IsString() && !args[1]->IsNumber()) {
+				error_desc = "Contract execution error, int64Mod, parameter 1 should be a String or Number";
+				break;
+			}
+
+			std::string arg0 = ToCString(v8::String::Utf8Value(args[0]));
+			std::string arg1 = ToCString(v8::String::Utf8Value(args[1]));
+			int64_t iarg0 = 0;
+			int64_t iarg1 = 0;
+
+			if (!utils::String::SafeStoi64(arg0, iarg0)) {
+				error_desc = "Contract execution error, int64Mod, parameter 0 illegal, maybe exceed the limit value of int64.";
+				break;
+			}
+
+			if (!utils::String::SafeStoi64(arg1, iarg1)) {
+				error_desc = "Contract execution error, int64Mod, parameter 1 illegal, maybe exceed the limit value of int64.";
+				break;
+			}
+
+			if (iarg1 <= 0 || iarg0 < 0) {
+				error_desc = "Parameter arg <= 0";
+				break;
+			}
+
+			args.GetReturnValue().Set(v8::String::NewFromUtf8(
+				args.GetIsolate(), utils::String::ToString(iarg0 % iarg1).c_str(), v8::NewStringType::kNormal).ToLocalChecked());
+			return;
+		} while (false);
+		LOG_ERROR("%s", error_desc.c_str());
+		args.GetIsolate()->ThrowException(
+			v8::String::NewFromUtf8(args.GetIsolate(), error_desc.c_str(),
+			v8::NewStringType::kNormal).ToLocalChecked());
+	}
+
+	//Int64 div
+	void ContractManager::CallBackInt64Div(const v8::FunctionCallbackInfo<v8::Value>& args){
+		std::string error_desc;
+		do {
+			if (args.Length() != 2) {
+				error_desc = "Parameter number error";
+				break;
+			}
+			v8::HandleScope handle_scope(args.GetIsolate());
+
+			if (!args[0]->IsString() && !args[0]->IsNumber()) {
+				error_desc = "Contract execution error, int64Div, parameter 0 should be a String or Number";
+				break;
+			}
+			if (!args[1]->IsString() && !args[1]->IsNumber()) {
+				error_desc = "Contract execution error, int64Div, parameter 1 should be a String or Number";
+				break;
+			}
+
+			std::string arg0 = ToCString(v8::String::Utf8Value(args[0]));
+			std::string arg1 = ToCString(v8::String::Utf8Value(args[1]));
+			int64_t iarg0 = 0;
+			int64_t iarg1 = 0;
+
+			if (!utils::String::SafeStoi64(arg0, iarg0)) {
+				error_desc = "Contract execution error, int64Div, parameter 0 illegal, maybe exceed the limit value of int64.";
+				break;
+			}
+
+			if (!utils::String::SafeStoi64(arg1, iarg1)) {
+				error_desc = "Contract execution error, int64Div, parameter 1 illegal, maybe exceed the limit value of int64.";
+				break;
+			}
+
+			if (iarg1 <= 0 || iarg0 < 0) {
+				error_desc = "Parameter arg <= 0";
+				break;
+			}
+
+			args.GetReturnValue().Set(v8::String::NewFromUtf8(
+				args.GetIsolate(), utils::String::ToString(iarg0 / iarg1).c_str(), v8::NewStringType::kNormal).ToLocalChecked());
+			return;
+		} while (false);
+		LOG_ERROR("%s", error_desc.c_str());
+		args.GetIsolate()->ThrowException(
+			v8::String::NewFromUtf8(args.GetIsolate(), error_desc.c_str(),
+			v8::NewStringType::kNormal).ToLocalChecked());
+	}
+
+	//Int64 compare
+	void ContractManager::CallBackInt64Compare(const v8::FunctionCallbackInfo<v8::Value>& args){
+		std::string error_desc;
+		do {
+			if (args.Length() != 2) {
+				error_desc = " Parameter number error";
+				break;
+			}
+			v8::HandleScope handle_scope(args.GetIsolate());
+
+			if (!args[0]->IsString() && !args[0]->IsNumber()) {
+				error_desc = "Contract execution error, int64Compare, parameter 0 should be a String or Number";
+				break;
+			}
+			if (!args[1]->IsString() && !args[1]->IsNumber()) {
+				error_desc = "Contract execution error, int64Compare, parameter 1 should be a String or Number";
+				break;
+			}
+
+			std::string arg0 = ToCString(v8::String::Utf8Value(args[0]));
+			std::string arg1 = ToCString(v8::String::Utf8Value(args[1]));
+			int64_t iarg0 = 0;
+			int64_t iarg1 = 0;
+
+			if (!utils::String::SafeStoi64(arg0, iarg0)) {
+				error_desc = "Contract execution error, int64Compare, parameter 0 illegal, maybe exceed the limit value of int64.";
+				break;
+			}
+
+			if (!utils::String::SafeStoi64(arg1, iarg1)) {
+				error_desc = "Contract execution error, int64Compare, parameter 1 illegal, maybe exceed the limit value of int64.";
+				break;
+			}
+
+			int32_t compare1 = 0;
+			if (iarg0 > iarg1) compare1 = 1;
+			else if (iarg0 == iarg1) {
+				compare1 = 0;
+			}
+			else {
+				compare1 = -1;
+			}
+
+			args.GetReturnValue().Set(v8::Int32::New(args.GetIsolate(), compare1));
+			return;
+		} while (false);
+		LOG_ERROR("%s", error_desc.c_str());
+		args.GetIsolate()->ThrowException(
+			v8::String::NewFromUtf8(args.GetIsolate(), error_desc.c_str(),
+			v8::NewStringType::kNormal).ToLocalChecked());
+	}
+
+	//Assert an expression
+	void ContractManager::CallBackAssert(const v8::FunctionCallbackInfo<v8::Value>& args){
+		std::string error_desc = "Assertion exception occurred";
+		do {
+			if (args.Length() < 1 || args.Length() > 2) {
+				error_desc.append(",parameter nums error");
+				break;
+			}
+			if (!args[0]->IsBoolean()) {
+				error_desc.append(",parameter 0 should be boolean");
+				break;
+			}
+
+			v8::HandleScope scope(args.GetIsolate());
+			if (args.Length() == 2) {
+				if (!args[1]->IsString()) {
+					error_desc.append(",parameter 1 should be string");
+					break;
+				}
+				else {
+					v8::String::Utf8Value str1(args[1]);
+					error_desc = ToCString(str1);
+				}
+			}
+			if (args[0]->BooleanValue() == false) {
+				break;
+			}
+			args.GetReturnValue().Set(true);
+			return;
+		} while (false);
+		LOG_ERROR("%s", error_desc.c_str());
+		args.GetIsolate()->ThrowException(
+			v8::String::NewFromUtf8(args.GetIsolate(), error_desc.c_str(),
+			v8::NewStringType::kNormal).ToLocalChecked());
+	}
+
+	//Check address valid
+	void ContractManager::CallBackAddressValidCheck(const v8::FunctionCallbackInfo<v8::Value>& args){
+		std::string error_desc;
+		do {
+			if (args.Length() != 1) {
+				error_desc = "parameter number error";
+				break;
+			}
+
+			if (!args[0]->IsString()) {
+				error_desc = "arg0 should be string";
+				break;
+			}
+
+			v8::HandleScope handle_scope(args.GetIsolate());
+
+			v8::String::Utf8Value utf8(args[0]);
+			std::string address = std::string(ToCString(utf8));
+			bool ret = PublicKey::IsAddressValid(address);
+
+			args.GetReturnValue().Set(ret);
+			return;
+		} while (false);
+
+		args.GetReturnValue().Set(false);
+	}
+
+	//Get the hash of one of the 1024 most recent complete blocks
+	void ContractManager::CallBackSha256(const v8::FunctionCallbackInfo<v8::Value>& args){
+		do {
+			if (args.Length() != 1 && args.Length() != 2) {
+				LOG_TRACE("Parameter error");
+				break;
+			}
+			v8::HandleScope handle_scope(args.GetIsolate());
+			if (!args[0]->IsString()) {
+				LOG_TRACE("Contract execution error, parameter 0 should be a string.");
+				break;
+			}
+			DataEncodeType encode_type = BASE16;
+			if (args.Length() == 2) {
+				if (!TransEncodeType(args[1], encode_type)) {
+					LOG_TRACE("Contract execution error, trans data encode type wrong.");
+					break;
+				}
+			}
+
+			std::string sha256_data;
+			if (!TransEncodeData(args[0], encode_type, sha256_data)) {
+				LOG_TRACE("Contract execution error, trans data wrong.");
+				break;
+			}
+
+			std::string output = utils::Sha256::Crypto(sha256_data);
+			if (output.empty()) {
+				LOG_TRACE("Sha256 result empty");
+				break;
+			}
+
+			args.GetReturnValue().Set(v8::String::NewFromUtf8(args.GetIsolate(), utils::String::BinToHexString(output).c_str(),
+				v8::NewStringType::kNormal).ToLocalChecked());
+			return;
+		} while (false);
+		args.GetReturnValue().Set(false);
+	}
+
+	void ContractManager::CallBackVerify(const v8::FunctionCallbackInfo<v8::Value>& args){
+		bool result = false;
+		do {
+			if (args.Length() != 3 && args.Length() != 4) {
+				LOG_TRACE("Parameter error");
+				break;
+			}
+			v8::HandleScope handle_scope(args.GetIsolate());
+			if (!args[0]->IsString() || !args[1]->IsString() || !args[2]->IsString()) {
+				LOG_TRACE("Parameters should be string");
+				break;
+			}
+
+			DataEncodeType encode_type = BASE16;
+			if (args.Length() == 4) {
+				if (!TransEncodeType(args[3], encode_type)) {
+					LOG_TRACE("Contract execution error, trans data encode type wrong.");
+					break;
+				}
+			}
+
+			std::string signed_data = ToCString(v8::String::Utf8Value(args[0]));
+			std::string public_key = ToCString(v8::String::Utf8Value(args[1]));
+			std::string blob_data;
+			if (!TransEncodeData(args[2], encode_type, blob_data)) {
+				LOG_TRACE("Contract execution error, trans data wrong.");
+				break;
+			}
+
+			if (blob_data.empty() || signed_data.empty() || public_key.empty()) {
+				LOG_TRACE("Parameter are empty");
+				break;
+			}
+
+			result = PublicKey::Verify(blob_data, utils::String::HexStringToBin(signed_data), public_key);
+		} while (false);
+		args.GetReturnValue().Set(result);
+	}
+
+	void ContractManager::CallBackToAddress(const v8::FunctionCallbackInfo<v8::Value>& args){
+		do {
+			if (args.Length() != 1) {
+				LOG_TRACE("Parameter error");
+				break;
+			}
+			v8::HandleScope handle_scope(args.GetIsolate());
+			if (!args[0]->IsString()) {
+				LOG_TRACE("Contract execution error, parameter 0 should be a string");
+				break;
+			}
+
+			std::string pub_key_str = ToCString(v8::String::Utf8Value(args[0]));
+			if (pub_key_str.empty()) {
+				LOG_TRACE("To address parameter empty");
+				break;
+			}
+
+			bubi::PublicKey pub_key(pub_key_str);
+			if (!pub_key.IsValid()) {
+				LOG_TRACE("ConvertPublicKey public key invalid.%s", pub_key_str.c_str());
+				break;
+			}
+			args.GetReturnValue().Set(v8::String::NewFromUtf8(
+				args.GetIsolate(), pub_key.GetBase16Address().c_str(), v8::NewStringType::kNormal).ToLocalChecked());
+
+			return;
+		} while (false);
+		args.GetReturnValue().Set(false);
+	}
+
+
+	bool ContractManager::TransEncodeType(const v8::Local<v8::Value> &arg, DataEncodeType &data_type) {
+		if (!arg->IsNumber()) {
+			LOG_TRACE("Contract execution error, parameter should be a number.");
+			return false;
+		}
+
+		std::string arg_str = ToCString(v8::String::Utf8Value(arg));
+		int64_t arg_num = 0;
+		if (!utils::String::SafeStoi64(arg_str, arg_num)) {
+			LOG_TRACE("Contract execution error, encode type maybe exceed the limit value of int64.");
+			return false;
+		}
+		if (arg_num < 0 || arg_num > BASE64) {
+			LOG_TRACE("Contract execution error, encode type must be in 0-2");
+			return false;
+		}
+		data_type = (DataEncodeType)arg_num;
+		return true;
+	}
+
+	bool ContractManager::TransEncodeData(const v8::Local<v8::Value> &raw_data, const DataEncodeType &encode_type, std::string &result_data) {
+		result_data.clear();
+		std::string input_raw = ToCString(v8::String::Utf8Value(raw_data));
+		switch (encode_type) {
+		case BASE16:{
+						result_data = utils::String::HexStringToBin(input_raw);
+						break;
+		}
+		case RAW_DATA:{
+						  result_data = input_raw;
+						  break;
+		}
+		case BASE64:{
+						utils::Base64Decode(input_raw, result_data);
+						break;
+		}
+		default:
+			break;
+		}
+
+		if (result_data.empty()) {
+			LOG_TRACE("TransEncodeData error");
+			return false;
+		}
+		return true;
+	}
+
 
 	//bool ContractManager::DoTransaction(protocol::TransactionEnv& env){
 	//	auto back = LedgerManager::Instance().transaction_stack_.second;

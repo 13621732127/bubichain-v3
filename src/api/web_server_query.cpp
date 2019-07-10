@@ -385,7 +385,7 @@ namespace bubi {
 		do
 		{
 			if (start_str.empty()) start_str = "0";
-			if (!utils::String::is_number(start_str) == 1){
+			if (!utils::String::IsNumber(start_str) == 1){
 				error_code = protocol::ERRCODE_INVALID_PARAMETER;
 				break;
 			}
@@ -393,7 +393,7 @@ namespace bubi {
 
 
 			if (limit_str.empty()) limit_str = "20";
-			if (!utils::String::is_number(limit_str) == 1){
+			if (!utils::String::IsNumber(limit_str) == 1){
 				error_code = protocol::ERRCODE_INVALID_PARAMETER;
 				break;
 			}

@@ -20,7 +20,7 @@ namespace utils {
 	public:
 		static const int kMaxStringLen = 1024 * 1024;
 
-		static int is_number(const std::string& str) {
+		static int IsNumber(const std::string& str) {
 			int base = 10;
 			const char * ptr;
 			int type = 0;
@@ -29,21 +29,21 @@ namespace utils {
 
 			ptr = str.c_str();
 
-			/* skip blank */
+			/* Skip blank */
 			while (IS_BLANK(*ptr)) {
 				ptr++;
 			}
 
-			/* skip sign */
+			/* Skip sign */
 			if (*ptr == '-' || *ptr == '+') {
 				ptr++;
 			}
 
-			/* first char should be digit or dot*/
+			/* First char should be digit or dot*/
 			if (IS_DIGIT(*ptr) || ptr[0] == '.') {
 
 				if (ptr[0] != '.') {
-					/* handle hex numbers */
+					/* Handle hex numbers */
 					if (ptr[0] == '0' && ptr[1] && (ptr[1] == 'x' || ptr[1] == 'X')) {
 						type = 2;
 						base = 16;
@@ -72,7 +72,7 @@ namespace utils {
 					ptr++;
 				}
 
-				/* if end with 0, it is number */
+				/* If it ends with 0, it is a number */
 				if (*ptr == 0)
 					return (type > 0) ? type : 1;
 				else
@@ -81,59 +81,103 @@ namespace utils {
 			return type;
 		}
 
-		/// @brief 转换成int类型
+		/// @brief Convert to int type
 		static int Stoi(const std::string &str) {
-			return (0 == str.length()) ? 0 : atoi(str.c_str());
+			if (0 == str.length()) {
+				return 0;
+			}
+			return atoi(str.c_str());
 		}
 
-		/// @brief 转换成unsigned int
+		/// @brief Convert to unsigned int
 		static unsigned int Stoui(const std::string &str) {
-			return (0 == str.length()) ? 0 : static_cast<unsigned int>(atoi(str.c_str()));
+			if (0 == str.length()) {
+				return 0;
+			}
+			size_t used_digits = 0;
+			uint32_t value = 0;
+			for (int i = 0; i < (int)str.size(); i++) {
+				char item_value = str[i];
+				if (item_value >= '0' && item_value <= '9') {
+					value *= 10;
+					value += (uint32_t)(item_value - '0');
+					used_digits++;
+				}
+				else if (!IsSpace(item_value) || used_digits > 0) {
+					break;
+				}
+			}
+
+			return value;
 		}
 
-		/// @brief 转换成int64类型
+		/// @brief Convert to int64 type
 		static int64_t Stoi64(const std::string &str) {
+			if (0 == str.length()) {
+				return 0;
+			}
 			int64_t v = 0;
 #ifdef WIN32
-			sscanf_s(str.c_str(), "%I64d", &v);
+			v = _atoi64(str.c_str());
 #else
-			sscanf(str.c_str(), "%ld", &v);
+			v = atoll(str.c_str());
 #endif
 			return v;
 		}
 
-		/// @brief转换成uint64类型
+		/// @brief Convert to uint64 type
 		static int64_t Stoui64(const std::string &str) {
-			int64_t v = 0;
-#ifdef WIN32
-			sscanf_s(str.c_str(), FMT_I64, &v);
-#else
-			sscanf(str.c_str(), FMT_I64, &v);
-#endif
-			return v;
+			if (0 == str.length()) {
+				return 0L;
+			}
+
+			size_t used_digits = 0;
+			uint64_t value = 0;
+			for (int i = 0; i < (int)str.size(); i++) {
+				char item_value = str[i];
+				if (item_value >= '0' && item_value <= '9') {
+					value *= 10;
+					value += (uint64_t)(item_value - '0');
+					used_digits++;
+				}
+				else if (!IsSpace(item_value) || used_digits > 0) {
+					break;
+				}
+			}
+
+			return value;
 		}
 
-		/// @brief 转换成long
+		/// @brief Convert to long
 		static long Stol(const std::string &str) {
-			return (0 == str.length()) ? 0L : atol(str.c_str());
+			if (0 == str.length()) {
+				return 0L;
+			}
+			return atol(str.c_str());
 		}
 
-		/// @brief 转换成float
+		/// @brief Convert to float
 		static float Stof(const std::string &str) {
-			return (0 == str.length()) ? 0.0f : static_cast<float>(atof(str.c_str()));
+			if (0 == str.length()) {
+				return 0.0F;
+			}
+			return static_cast<float>(atof(str.c_str()));
 		}
 
-		/// @brief 转换成double
+		/// @brief Convert to double
 		static double Stod(const std::string &str) {
-			return (0 == str.length()) ? 0.0 : atof(str.c_str());
+			if (0 == str.length()) {
+				return 0.0;
+			}
+			return atof(str.c_str());
 		}
 
-		/// @brief 转换成bool
+		/// @brief Convert to bool
 		static bool Stob(const std::string &str) {
 			return (0 == str.length() || str == "0" || str == "false" || str == "FALSE") ? false : true;
 		}
 
-		/// @brief 将int类型数据转成字符串
+		/// @brief Convert int type into String
 		static std::string ToString(const int val) {
 			char buf[32] = { 0 };
 #ifdef WIN32
@@ -144,7 +188,7 @@ namespace utils {
 			return buf;
 		}
 
-		/// @brief 将unsigned int类型数据转成字符串
+		/// @brief Convert unsigned int into String
 		static std::string ToString(const unsigned int val) {
 			char buf[32] = { 0 };
 #ifdef WIN32
@@ -155,7 +199,7 @@ namespace utils {
 			return buf;
 		}
 
-		/// @brief 将long类型数据转成字符串
+		/// @brief Convert long into String
 		//    static std::string ToString(const long val)
 		//    {
 		//        char buf[32] = {0};
@@ -167,7 +211,7 @@ namespace utils {
 		//		return buf;
 		//    }
 
-		/// @brief 将long long类型数据转成字符串
+		/// @brief Convert long long into String
 		static std::string ToString(const int64_t val) {
 			char buf[32] = { 0 };
 #ifdef WIN32    
@@ -178,7 +222,17 @@ namespace utils {
 			return buf;
 		}
 
-		/// @brief 将double类型数据转成字符串
+		static std::string ToString(const uint64_t val) {
+			char buf[32] = { 0 };
+#ifdef WIN32    
+			_snprintf(buf, sizeof(buf), FMT_U64, val);
+#else
+			snprintf(buf, sizeof(buf), FMT_U64, val);
+#endif
+			return buf;
+		}
+
+		/// @brief Convert double into String
 		static std::string ToString(const double val) {
 			char buf[32] = { 0 };
 #ifdef WIN32    
@@ -189,12 +243,72 @@ namespace utils {
 			return buf;
 		}
 
-		/// @brief 将bool类型数据转成字符串
+		/// @brief Convert bool into String
 		static std::string ToString(const bool val) {
 			return val ? "1" : "0";
 		}
 
-		/// @brief 格式化字符串
+		static bool SafeStoi(const std::string &str, int& num){
+			if (str.size() > 11)
+				return false;
+
+			int temNum = Stoi(str);
+			std::string temStr = ToString(temNum);
+			if (0 == str.compare(temStr)){
+				num = temNum;
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+
+		static bool SafeStoui(const std::string &str, unsigned int& num){
+			if (str.size() > 10)
+				return false;
+
+			unsigned int temNum = Stoui(str);
+			std::string temStr = ToString(temNum);
+			if (0 == str.compare(temStr)){
+				num = temNum;
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+
+		static bool SafeStoi64(const std::string &str, int64_t& num){
+			if (str.size() > 20)
+				return false;
+
+			int64_t temNum = Stoi64(str);
+			std::string temStr = ToString(temNum);
+			if (0 == str.compare(temStr)){
+				num = temNum;
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+
+		static bool SafeStoui64(const std::string &str, uint64_t& num){
+			if (str.size() > 20)
+				return false;
+
+			uint64_t temNum = Stoui64(str);
+			std::string temStr = ToString(temNum);
+			if (0 == str.compare(temStr)){
+				num = temNum;
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+
+		/// @brief Format String
 		static std::string &Format(std::string &str, const char *format, ...) {
 			va_list ap;
 
@@ -235,7 +349,7 @@ namespace utils {
 			return ret;
 		}
 
-		//like string a=1;b=2;c=3 delim is ; ope is = 
+		//Such as string a=1;b=2;c=3 delim is ; ope is = 
 		static std::map<std::string, std::string> ParseAttribute(const std::string &s, const std::string &delim, const std::string &ope) {
 			std::map<std::string, std::string> ret;
 			std::vector< std::string > split_string = split(s, delim);
@@ -251,7 +365,7 @@ namespace utils {
 			return ret;
 		}
 
-		/// @brief 格式化字符串
+		/// @brief Format String
 		static std::string Format(const char *format, ...) {
 			va_list ap;
 
@@ -308,12 +422,12 @@ namespace utils {
 
 		static bool IsSpace(const char nValue) {
 			//
-			// isspace will cause assert failed if value < 0
+			// Isspace will cause assert failure if value < 0
 			//
 			return (nValue > 0) && isspace(nValue);
 		}
 
-		/// @brief 移除左侧的空格、换行符和制表符
+		/// @brief Remove spaces, line breaks, and tabs on the left
 		static std::string TrimLeft(std::string &str) {
 			if (str.size() == 0) return str;
 
@@ -331,7 +445,7 @@ namespace utils {
 			return str;
 		}
 
-		/// @brief 移除右侧的空格、换行符和制表符
+		/// @brief Remove spaces, line breaks, and tabs to the right
 		static std::string TrimRight(std::string str) {
 			if (str.size() == 0) return str;
 
@@ -352,7 +466,7 @@ namespace utils {
 			return str;
 		}
 
-		/// @brief 移除左右两侧的空格、换行符和制表符
+		/// @brief Remove spaces, line breaks, and tabs on the left and right sides
 		static std::string Trim(std::string &str) {
 			if (str.size() == 0) return str;
 
@@ -374,7 +488,7 @@ namespace utils {
 			return str;
 		}
 
-		/// @brief 判断字符串是否都是可显示的字符
+		/// @brief Determine if the string is a displayable character
 		static bool CanDisplay(const std::string &str) {
 			for (size_t i = 0; i < str.length(); i++) {
 				if (!(str[i] >= 0x20 && str[i] <= 127)) {
@@ -384,7 +498,7 @@ namespace utils {
 			return true;
 		}
 
-		/// @brief 是否包含大写字母
+		/// @brief Whether it contains uppercase letters
 		static bool IsContainUppercase(const std::string &str) {
 			for (size_t i = 0; i < str.length(); i++) {
 				if (str[i] >= 'A' && str[i] <= 'Z') {
@@ -394,7 +508,7 @@ namespace utils {
 			return false;
 		}
 
-		/// @brief 是否包含小写字母
+		/// @brief Whether it contains lowercase letters
 		static bool IsContainLowercase(const std::string &str) {
 			for (size_t i = 0; i < str.length(); i++) {
 				if (str[i] >= 'a' && str[i] <= 'z') {
@@ -404,7 +518,7 @@ namespace utils {
 			return false;
 		}
 
-		/// @brief 是否是整型数据
+		/// @brief Is it an integer data?
 		static bool IsInteger(const std::string &str) {
 			for (size_t i = 0; i < str.length(); i++) {
 				if (str[i] > '9' || str[i] < '0') {
@@ -415,25 +529,25 @@ namespace utils {
 
 		}
 
-		/// @brief 转成小写字母
+		/// @brief Convert to lowercase letters
 		static std::string ToLower(std::string &str) {
 			for (std::string::size_type i = 0; i < str.length(); ++i)
-				if (str[i] >= 'A' && str[i] <= 'Z') {
-					str[i] += 0x20;
-				}
+			if (str[i] >= 'A' && str[i] <= 'Z') {
+				str[i] += 0x20;
+			}
 			return str;
 		}
 
-		/// @brief 转成大写字母
+		/// @brief Convert to uppercase letters
 		static std::string ToUpper(std::string &str) {
 			for (std::string::size_type i = 0; i < str.length(); ++i)
-				if (str[i] >= 'a' && str[i] <= 'z') {
-					str[i] -= 0x20;
-				}
+			if (str[i] >= 'a' && str[i] <= 'z') {
+				str[i] -= 0x20;
+			}
 			return str;
 		}
 
-		/// @brief 字符是不是字母
+		/// @brief Whether the character is a letter
 		static bool CharIsLetter(char c) {
 			if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
 				return true;
@@ -441,7 +555,7 @@ namespace utils {
 			return false;
 		}
 
-		/// @brief 两字符串是否相等，忽略大小写
+		/// @brief Whether the two strings are equal, ignoring case
 		static bool EqualsIgnoreCase(const std::string &s1, const std::string &s2) {
 			if (s1.length() != s2.length()) {
 				return false;
@@ -461,7 +575,7 @@ namespace utils {
 			return true;
 		}
 
-		// @brief 是否包含子串，忽略大小写
+		// @brief Whether to include substrings, ignoring case
 		static bool IsContainStringIgnoreCase(const std::string &str1, const std::string &str2) {
 			std::string s1(str1);
 			std::string s2(str2);
@@ -472,7 +586,7 @@ namespace utils {
 			return std::string::npos != str1.find(str2);
 		}
 
-		/// @brief 替换字符串中的文字
+		/// @brief Replace the text in the string
 		static std::string Replace(std::string &str, const std::string &from, const std::string &to) {
 			std::string::size_type pos = 0;
 			while ((pos = str.find(from, pos)) != -1) {
@@ -494,7 +608,7 @@ namespace utils {
 
 			while (std::string::npos != pos) {
 				pos = str.find_first_of(separator, newPos);
-				if (std::string::npos == pos) { // 结束了
+				if (std::string::npos == pos) { // Complete
 					if (pos > newPos) {
 						arr.push_back(str.substr(newPos, pos - newPos));
 					}
@@ -524,41 +638,41 @@ namespace utils {
 			return result;
 		}
 
-	static std::string HexStringToBin(const std::string &hex_string, bool force_little = false){
-		if (hex_string.size() % 2 != 0 || hex_string.empty() ){
-			return "";
-		}
-		std::string result;
-		result.resize(hex_string.size()/2);
-		for (size_t i = 0; i < hex_string.size() - 1; i = i + 2){
-			uint8_t high = 0;
-            if (hex_string[i] >= '0' && hex_string[i] <= '9')
-                high = (hex_string[i] - '0');
-            else if (hex_string[i] >= 'a' && hex_string[i] <= 'f')
-                high = (hex_string[i] - 'a' + 10);
-			else if (hex_string[i] >= 'A' && hex_string[i] <= 'F'  && !force_little) {
-				high = (hex_string[i] - 'A' + 10);
-			}
-			else {
+		static std::string HexStringToBin(const std::string &hex_string, bool force_little = false){
+			if (hex_string.size() % 2 != 0 || hex_string.empty()){
 				return "";
 			}
+			std::string result;
+			result.resize(hex_string.size() / 2);
+			for (size_t i = 0; i < hex_string.size() - 1; i = i + 2){
+				uint8_t high = 0;
+				if (hex_string[i] >= '0' && hex_string[i] <= '9')
+					high = (hex_string[i] - '0');
+				else if (hex_string[i] >= 'a' && hex_string[i] <= 'f')
+					high = (hex_string[i] - 'a' + 10);
+				else if (hex_string[i] >= 'A' && hex_string[i] <= 'F'  && !force_little) {
+					high = (hex_string[i] - 'A' + 10);
+				}
+				else {
+					return "";
+				}
 
-			uint8_t low = 0;
-            if (hex_string[i + 1] >= '0' && hex_string[i + 1] <= '9')
-                low = (hex_string[i + 1] - '0');
-            else if (hex_string[i + 1] >= 'a' && hex_string[i + 1] <= 'f')
-                low = (hex_string[i + 1] - 'a' + 10);
-			else  if (hex_string[i + 1] >= 'A' && hex_string[i + 1] <= 'F' && !force_little) {
-                low = (hex_string[i + 1] - 'A' + 10);
-			}
-			else {
-				return "";
-			}
+				uint8_t low = 0;
+				if (hex_string[i + 1] >= '0' && hex_string[i + 1] <= '9')
+					low = (hex_string[i + 1] - '0');
+				else if (hex_string[i + 1] >= 'a' && hex_string[i + 1] <= 'f')
+					low = (hex_string[i + 1] - 'a' + 10);
+				else  if (hex_string[i + 1] >= 'A' && hex_string[i + 1] <= 'F' && !force_little) {
+					low = (hex_string[i + 1] - 'A' + 10);
+				}
+				else {
+					return "";
+				}
 
-			int valuex = (high << 4) + low;
-			//sscanf(hex_string.substr(i, 2).c_str(), "%x", &valuex);
-			result.at(i/2) = (char)valuex;
-		}
+				int valuex = (high << 4) + low;
+				//sscanf(hex_string.substr(i, 2).c_str(), "%x", &valuex);
+				result.at(i / 2) = (char)valuex;
+			}
 
 			return result;
 		}
@@ -621,6 +735,35 @@ namespace utils {
 			return nLocalTimestamp;
 		}
 
+		/*
+		assert(FormatDecimal(123456789, 1) == "12345678.9");
+		assert(FormatDecimal(123456789, 2) == "1234567.89");
+		*/
+		template <typename VALUE_TYPE>
+		static std::string FormatDecimal(VALUE_TYPE number, size_t decimal) {
+			std::string result = utils::String::ToString(number);
+			if (decimal >= result.size()) result.insert(0, decimal - result.size() + 1, '0');
+
+			std::string result_decimal;
+			bool zero_not_show = true;
+			for (size_t i = 0; i < result.size(); i++) {
+				size_t rev_index = result.size() - i - 1;
+				if (result[rev_index] != '0') zero_not_show = false;
+				if (i < decimal) {
+					if (result[rev_index] != '0' || !zero_not_show) result_decimal.push_back(result[rev_index]);
+				}
+				else if (i == decimal) {
+					if (result_decimal.size() > 0) result_decimal.push_back('.');
+					result_decimal.push_back(result[rev_index]);
+				}
+				else {
+					result_decimal.push_back(result[rev_index]);
+				}
+			}
+			std::reverse(result_decimal.begin(), result_decimal.end());
+			return result_decimal;
+		}
+
 		static StringVector Strtok(const std::string &str, char separator) {
 			size_t pos = 0;
 			size_t newPos = 0;
@@ -628,7 +771,7 @@ namespace utils {
 
 			while (std::string::npos != pos) {
 				pos = str.find_first_of(separator, newPos);
-				if (std::string::npos == pos) { // 结束了
+				if (std::string::npos == pos) { // Complete
 					if (pos > newPos) {
 						arr.push_back(str.substr(newPos, pos - newPos));
 					}
@@ -642,6 +785,87 @@ namespace utils {
 				}
 			}
 			return arr;
+		}
+
+
+		static std::string MultiplyDecimal(std::string value, size_t decimals) {
+			size_t dot_pos = value.find(".");
+			if (dot_pos == std::string::npos) {
+				value.insert(value.end(), decimals, '0');
+			}
+			else{
+				size_t right = value.size() - dot_pos - 1;
+				if (right <= decimals) {
+					value.erase(value.find("."), 1);
+					value.insert(value.end(), decimals - right, '0');
+				}
+				else {
+					value.erase(dot_pos, 1);
+					value.insert(dot_pos + decimals, 1, '.');
+				}
+			}
+
+			size_t i = 0;
+			for (; i < value.size(); i++) {
+				if (value[i] != '0') {
+					break;
+				}
+			}
+
+			if (value[i] == '.') {
+				i--;
+			}
+
+			value.erase(0, i);
+
+			return value;
+		}
+
+		static bool IsDecNumber(const std::string &value, size_t decimal) {
+			if (value.empty()) {
+				return false;
+			}
+
+			if (value[value.size() - 1] == '.') {
+				return false;
+			}
+
+			bool ret = true;
+			size_t count_zero = 0;
+			bool continue_zero = true;
+			size_t dot_pos = std::string::npos;
+			for (size_t i = 0; i < value.size(); i++) {
+				if (!IS_DIGIT(value[i]) && value[i] != '.') {
+					return false;
+				}
+
+				if (continue_zero && value[i] == '0') {
+					count_zero++;
+				}
+				else {
+					continue_zero = false;
+				}
+
+				if (value[i] == '.') {
+					if (dot_pos == std::string::npos) {
+						dot_pos = i;
+					}
+					else {
+						return false;
+					}
+				}
+			}
+			// 0123 or 00123, except 0 or 0.123
+			bool leading_zero = (value[0] == '0') ? true : false;
+			if ((leading_zero && dot_pos != 1) && value != "0") {
+				return false;
+			}
+
+			if ((dot_pos != std::string::npos) && (value.size() - dot_pos - 1 > decimal)) {
+				return false;
+			}
+
+			return ret;
 		}
 
 		template <typename VALUE_TYPE>
@@ -686,7 +910,7 @@ namespace utils {
 			return item_count;
 		}
 
-		// parse attribute string, format such as "a=b;c=d;e=f" => Map{"a"=>"b", "c"=>"d","e"=>"f"}
+		// Parse attribute string, in format such as "a=b;c=d;e=f" => Map{"a"=>"b", "c"=>"d","e"=>"f"}
 		static int ParseAttributes(const std::string &content,
 			StringMap &attrs,
 			const std::string &sep_key,
