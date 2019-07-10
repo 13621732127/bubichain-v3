@@ -18,6 +18,8 @@
 
 void RunLoop();
 int main(int argc, char *argv[]){
+
+
 	utils::Thread::SetCurrentThreadName("bubi-thread");
 
 	utils::Daemon::InitInstance();

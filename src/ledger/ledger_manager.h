@@ -50,6 +50,9 @@ namespace bubi {
 		bool ConsensusValueFromDB(int64_t seq, protocol::ConsensusValue& request);
 
 		bool DoTransaction(protocol::TransactionEnv& env);
+		std::string GetBottomHash();
+
+		std::shared_ptr<TransactionFrm> GetStackTxElement(std::stack<std::shared_ptr<TransactionFrm>> transaction_stack, int64_t position);
 
 		virtual void OnTimer(int64_t current_time) override;
 		virtual void OnSlowTimer(int64_t current_time) override;

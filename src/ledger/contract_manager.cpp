@@ -16,7 +16,7 @@ namespace bubi{
 	const std::string ContractManager::trigger_tx_name_ = "trigger";
 	const std::string ContractManager::trigger_tx_index_name_ = "triggerIndex";
 	const std::string ContractManager::this_header_name_ = "consensusValue";
-	const std::string ContractManager::tx_hash_ = "hash";
+	const std::string ContractManager::tx_hash_ = "tx_hash";
 
 	v8::Platform* ContractManager::platform_ = nullptr;
 	v8::Isolate::CreateParams ContractManager::create_params_;

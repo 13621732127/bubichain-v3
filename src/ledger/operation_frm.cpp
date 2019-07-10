@@ -518,7 +518,7 @@ namespace bubi {
 			}
 			
 			std::string javascript = dest_account->GetProtoAccount().contract().payload();
-
+			auto &tran = LedgerManager::Instance().GetStackTxElement(LedgerManager::Instance().transaction_stack_, 0);
 			if (!javascript.empty()){
 				ContractManager manager;
 	
@@ -528,7 +528,7 @@ namespace bubi {
 					payment.dest_address(),
 					source_account_->GetAccountAddress(),
 					transaction_->GetTransactionString(),
-					transaction_->GetContentHash(),
+					tran->GetContentHash(),
 					index_,
 					transaction_->ledger_->GetConsensusValueString(),
 					err_msg
@@ -641,6 +641,7 @@ namespace bubi {
 			proto_dest_account.set_balance(proto_dest_account.balance() + ope.amount());
 			
 			std::string javascript = dest_account_ptr->GetProtoAccount().contract().payload();
+			auto &tran = LedgerManager::Instance().GetStackTxElement(LedgerManager::Instance().transaction_stack_, 0);
 			if (!javascript.empty()) {
 				ContractManager manager;
 
@@ -650,7 +651,7 @@ namespace bubi {
 					ope.dest_address(),
 					source_account_->GetAccountAddress(),
 					transaction_->GetTransactionString(),
-					transaction_->GetContentHash(),
+					tran->GetContentHash(),
 					index_,
 					transaction_->ledger_->GetConsensusValueString(),
 					err_msg)) {
