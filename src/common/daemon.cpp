@@ -1,16 +1,3 @@
-/*
-Copyright Bubi Technologies Co., Ltd. 2017 All Rights Reserved.
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
 #include <utils/timestamp.h>
 #include <utils/logger.h>
 #include "daemon.h"
@@ -32,7 +19,7 @@ namespace utils {
 #ifdef WIN32
 
 #else
-		//»¥³âËø³õÊ¼»¯
+		//äº’æ–¥é”åˆå§‹åŒ–
 		int fd;
 		pthread_mutexattr_t mattr;
 		fd = open("/dev/zero", O_RDWR, 0);
@@ -42,20 +29,20 @@ namespace utils {
 		pthread_mutexattr_setpshared(&mattr, PTHREAD_PROCESS_SHARED);
 		pthread_mutex_init(mptr, &mattr);
 
-		//´´½¨¹²ÏíÄÚ´æ
+		//åˆ›å»ºå…±äº«å†…å­˜
 		shmid = shmget((key_t)key, sizeof(int64_t), 0666 | IPC_CREAT);
 		if (shmid == -1) {
 			LOG_ERROR("shmget failed");
 			return true;
 		}
-		//½«¹²ÏíÄÚ´æÁ¬½Óµ½µ±Ç°½ø³ÌµÄµØÖ·¿Õ¼ä
+		//å°†å…±äº«å†…å­˜è¿æ¥åˆ°å½“å‰è¿›ç¨‹çš„åœ°å€ç©ºé—´
 		shm = shmat(shmid, (void*)0, 0);
 		if (shm == (void*)-1) {
 			LOG_ERROR("shmat failed\n");
 			return false;
 		}
 		LOG_INFO("Memory attached at %lx\n", (unsigned long int)shm);
-		//ÉèÖÃ¹²ÏíÄÚ´æ
+		//è®¾ç½®å…±äº«å†…å­˜
 		shared = (int64_t*)shm;
 
 #endif
@@ -65,7 +52,7 @@ namespace utils {
 	bool Daemon::Exit() {
 #ifdef WIN32
 #else
-		//°Ñ¹²ÏíÄÚ´æ´Óµ±Ç°½ø³ÌÖĞ·ÖÀë
+		//æŠŠå…±äº«å†…å­˜ä»å½“å‰è¿›ç¨‹ä¸­åˆ†ç¦»
 		if (shmdt(shm) == -1) {
 			LOG_ERROR("shmdt failed");
 			return false;
