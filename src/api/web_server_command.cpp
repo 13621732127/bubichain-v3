@@ -1,4 +1,3 @@
-
 #include <utils/headers.h>
 #include <common/private_key.h>
 #include <common/general.h>
