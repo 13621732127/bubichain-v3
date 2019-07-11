@@ -882,16 +882,20 @@ namespace bubi {
 		return environment_;
 	}
 
-	std::shared_ptr<TransactionFrm> LedgerManager::GetStackTxElement(std::stack<std::shared_ptr<TransactionFrm>> transaction_stack, int64_t position){
-		std::shared_ptr<TransactionFrm> result = transaction_stack.top();
-		transaction_stack.pop();
-		if (transaction_stack.size() == position){
-			return result;
-		}else{
-			std::shared_ptr<TransactionFrm> element = GetStackTxElement(transaction_stack, position);
-			transaction_stack.push(element);
-			return element;
+	std::shared_ptr<TransactionFrm> LedgerManager::GetStackBottomTx(){
+		std::stack<std::shared_ptr<TransactionFrm>> transaction_stack = transaction_stack_;
+		if (transaction_stack.size()==0){
+			return NULL;
 		}
+
+		while (true){
+			if (transaction_stack.size()==1){
+				return transaction_stack.top();
+			}
+			else{
+				transaction_stack.pop();
+			}
+		}	
 	}
 
 
