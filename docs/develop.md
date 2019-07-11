@@ -1347,10 +1347,10 @@ function main(input)
 
     例如
     ```javascript
-    let ret = toAddress('b0016ebe6191f2eb73a4f62880b2874cae1191183f50e1b18b23fcf40b75b7cd5745d671d1c8');
+    let ret = toAddress('b001e9fd31a0fc25af3123f67575cdd0c6b8c2192eead9f58728a3fb46accdc0faa67f');
     /*
       权限：只读
-      返回：成功返回 "buQi6f36idrKiGrno3RcdjUjGAibUC37FJK6"，失败返回false
+      返回：成功返回 "a0012ea403227b861289ed5fcedd30e51e85ef7397ebc6"，失败返回false
     */
 
     ```
