@@ -1162,7 +1162,7 @@ function main(input)
     var result = callBackDoOperation(transaction);
     /*result 为true或false*/
     ```
-    ##### 地址合法性检查
+- ##### 地址合法性检查
 
     `addressCheck(address);`
     - address 地址参数，字符串
@@ -1240,7 +1240,7 @@ function main(input)
 
     ```
 
- - ##### 64位除法
+- ##### 64位除法
 
     `int64Div(left_value, right_value);`
     - left_value: 左值
@@ -1256,7 +1256,7 @@ function main(input)
 
     ```
 
- - ##### 64位取模
+- ##### 64位取模
 
     `int64Mod(left_value, right_value);`
     - left_value: 左值
@@ -1272,7 +1272,7 @@ function main(input)
 
     ```
 
- - ##### 64位比较
+- ##### 64位比较
     `int64Compare(left_value, right_value);`
 
     - 返回值 1：左值大于右值，0：等于，-1 ：小于
@@ -1288,7 +1288,7 @@ function main(input)
     */
 
     ```
-    ##### 断言
+- ##### 断言
 
     `assert(condition[, message]);`
      - condition: 断言变量
@@ -1302,7 +1302,7 @@ function main(input)
       返回：成功返回 true，失败抛异常  
     */
     ```
-     ### sha256计算
+- ##### sha256计算
     `sha256(data[, dataType]);`
 
     - data: 待计算hash的原始数据，根据dataType不同，填不同格式的数据。
@@ -1321,7 +1321,7 @@ function main(input)
     ```
 
           
-- ### 校验签名是否合法
+- ##### 校验签名是否合法
     `ecVerify(signedData, publicKey,blobData [, blobDataType]);`
 
     - signedData: 签名数据，base16编码的字符串。
@@ -1339,7 +1339,7 @@ function main(input)
     */
 
     ```
-  ### 公钥转地址
+- ##### 公钥转地址
 
     `toAddress(public_key);`
     - public_key 公钥，base16编码的字符串
@@ -1370,7 +1370,7 @@ function main(input)
     bar的值是Y合约的账号地址。
     */
     ```
-  #### 交易的哈希值
+- ##### 交易的哈希值
     `txHash`
     交易的hash值
 
