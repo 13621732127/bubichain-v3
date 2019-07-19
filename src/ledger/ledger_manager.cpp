@@ -754,7 +754,7 @@ namespace bubi {
 	}
 
 	ExprCondition::ExprCondition(const std::string & program, std::shared_ptr<Environment> env , const protocol::ConsensusValue &cons_value) :
-		utils::ExprParser(program),
+		utils::ExprParser(program, LedgerManager::Instance().GetLastClosedLedger().version()),
 		environment_(env),
 		cons_value_(cons_value){}
 	ExprCondition::~ExprCondition() {}
@@ -763,6 +763,7 @@ namespace bubi {
 		//utils::OneCommonArgumentFunctions["ledger"] = DoLedger;
 		utils::OneCommonArgumentFunctions["account"] = DoAccount;
 		utils::TwoCommonArgumentFunctions["jsonpath"] = DoJsonPath;
+		utils::TwoCommonArgumentFunctionsNew["jsonpath"] = DoJsonPath;
 	}
 
 	const utils::ExprValue ExprCondition::DoAccount(const utils::ExprValue &arg, utils::ExprParser *parser) {

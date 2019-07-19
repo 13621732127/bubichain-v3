@@ -100,8 +100,10 @@ namespace utils {
 	class ExprParser;
 	typedef const ExprValue(*OneCommonArgFunction)  (const ExprValue &arg, ExprParser *parser);
 	typedef const ExprValue(*TwoCommonArgFunction)  (const ExprValue &arg1, const ExprValue &arg2, ExprParser *parser);
+	typedef const ExprValue(*TwoCommonArgFunctionNew)  (const ExprValue &arg1, const ExprValue &arg2, ExprParser *parser);
 	extern std::map<std::string, OneCommonArgFunction>    OneCommonArgumentFunctions;
 	extern std::map<std::string, TwoCommonArgFunction>    TwoCommonArgumentFunctions;
+	extern std::map<std::string, TwoCommonArgFunctionNew>    TwoCommonArgumentFunctionsNew;
 
 	class ExprParser {
 	private:
@@ -115,10 +117,12 @@ namespace utils {
 		int64_t i_value_;
 		bool detect_;
 	public:
+		const static uint32_t LEDGER_VERSION_HISTORY_3001;
+		int64_t ledger_version_;
 
 		// ctor
-		ExprParser(const std::string & program)
-			: program_(program), detect_(false){
+		ExprParser(const std::string & program,int64_t ledger_version)
+			: program_(program), ledger_version_(ledger_version), detect_(false){
 			// insert pre-defined names:
 			symbols_["pi"] = 3.1415926535897932385;
 			symbols_["e"] = 2.7182818284590452354;
