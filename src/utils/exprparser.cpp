@@ -193,7 +193,7 @@ namespace utils {
 
 	typedef double(*OneArgFunction)  (double arg);
 	typedef const ExprValue(*TwoArgFunction)  (const ExprValue &arg1, const ExprValue &arg2);
-	typedef const ExprValue(*TwoArgFunctionNew)  (const ExprValue &arg1, const ExprValue &arg2);
+	typedef const ExprValue(*TwoArgFunction)  (const ExprValue &arg1, const ExprValue &arg2);
 	typedef const ExprValue(*ThreeArgFunction)  (const ExprValue &arg1, const ExprValue &arg2, const ExprValue &arg3);
 
 	// maps of function names to functions
@@ -202,6 +202,13 @@ namespace utils {
 	static std::map<std::string, TwoArgFunction>    TwoArgumentFunctions; //for internal use
 	std::map<std::string, TwoCommonArgFunction>    TwoCommonArgumentFunctions; //for custom user
 	static std::map<std::string, ThreeArgFunction>  ThreeArgumentFunctions;//for internal use
+
+	typedef double(*OneArgFunctionNew)  (double arg);
+	typedef const ExprValue(*TwoArgFunctionNew)  (const ExprValue &arg1, const ExprValue &arg2);
+	
+	// maps of function names to functions
+	static std::map<std::string, OneArgFunctionNew>    OneArgumentFunctionsNew; //for internal use
+	std::map<std::string, OneCommonArgFunctionNew>    OneCommonArgumentFunctionsNew; //for custom user
 	static std::map<std::string, TwoArgFunctionNew>    TwoArgumentFunctionsNew; //for internal use
 	std::map<std::string, TwoCommonArgFunctionNew>    TwoCommonArgumentFunctionsNew; //for custom user
 
@@ -240,13 +247,6 @@ namespace utils {
 		return 0;
 	} // end of LoadTwoArgumentFunctions
 
-
-	static int LoadTwoArgumentFunctionsNew(){
-		TwoArgumentFunctions["min"] = DoMin;
-		TwoArgumentFunctions["max"] = DoMax;
-		return 0;
-	}
-
 	static int LoadTwoArgumentFunctions(){
 		TwoArgumentFunctions["min"] = DoMin;
 		TwoArgumentFunctions["max"] = DoMax;
@@ -260,6 +260,21 @@ namespace utils {
 		ThreeArgumentFunctions["if"] = DoIf;
 		return 0;
 	} // end of LoadThreeArgumentFunctions
+
+
+	static int LoadOneArgumentFunctionsNew(){
+		return 0;
+	}
+
+	static int LoadOneCommonArgumentFunctionsNew(){
+		return 0;
+	} // end of LoadTwoArgumentFunctions
+
+	static int LoadTwoArgumentFunctionsNew(){
+		TwoArgumentFunctionsNew["min"] = DoMin;
+		TwoArgumentFunctionsNew["max"] = DoMax;
+		return 0;
+	}
 
 	ExprValue::ExprValue(enum TokenType type) : type_(type){}
 
@@ -1024,6 +1039,9 @@ namespace utils {
 	static int doLoadOneCommonArgumentFunctions = LoadOneCommonArgumentFunctions();
 	static int doLoadTwoArgumentFunctions = LoadTwoArgumentFunctions();
 	static int doLoadThreeArgumentFunctions = LoadThreeArgumentFunctions();
+
+	static int doLoadOneArgumentFunctionsNew = LoadOneArgumentFunctionsNew();
+	static int doLoadOneCommonArgumentFunctionsNew = LoadOneCommonArgumentFunctionsNew();
 	static int doLoadTwoArgumentFunctionsNew = LoadTwoArgumentFunctionsNew();
 
 	const ExprValue ExprParser::Primary(const bool get) {  // primary (base) tokens
@@ -1058,99 +1076,10 @@ namespace utils {
 			if (type_ == ExprValue::LHPAREN )
 			{
 				if (ledger_version_ <= LEDGER_VERSION_HISTORY_3001){
-					// might be single-argument function (eg. abs (x) )
-					std::map<std::string, OneArgFunction>::const_iterator si;
-					si = OneArgumentFunctions.find(word);
-					if (si != OneArgumentFunctions.end())
-					{
-						ExprValue v = Expression(true);   // get argument
-						CheckToken(ExprValue::RHPAREN);
-						GetToken(true);        // get next one (one-token lookahead)
-						return si->second(v.d_value_);  // evaluate function
-					}
-
-					// might be single-common-argument function (eg. abs (x) )
-					std::map<std::string, OneCommonArgFunction>::const_iterator sic;
-					sic = OneCommonArgumentFunctions.find(word);
-					if (sic != OneCommonArgumentFunctions.end())
-					{
-						ExprValue v = Expression(true);   // get argument
-						CheckToken(ExprValue::RHPAREN);
-						GetToken(true);        // get next one (one-token lookahead)
-						return detect_ ? ExprValue(ExprValue::UNSURE) : sic->second(v, this);  // evaluate function
-					}
-
-					// might be double-argument function (eg. roll (6, 2) )
-					std::map<std::string, TwoArgFunction>::const_iterator di;
-					di = TwoArgumentFunctions.find(word);
-					if (di != TwoArgumentFunctions.end())
-					{
-						ExprValue v1 = Expression(true);   // get argument 1 (not commalist)
-						CheckToken(ExprValue::COMMA);
-						ExprValue v2 = Expression(true);   // get argument 2 (not commalist)
-						CheckToken(ExprValue::RHPAREN);
-						GetToken(true);            // get next one (one-token lookahead)
-						return di->second(v1, v2); // evaluate function
-					}
-
-					// might be double-common-argument function (eg. roll (6, 2) )
-					std::map<std::string, TwoCommonArgFunction>::const_iterator dic;
-					dic = TwoCommonArgumentFunctions.find(word);
-					if (dic != TwoCommonArgumentFunctions.end())
-					{
-						ExprValue v1 = Expression(true);   // get argument 1 (not commalist)
-						CheckToken(ExprValue::COMMA);
-						ExprValue v2 = Expression(true);   // get argument 2 (not commalist)
-						CheckToken(ExprValue::RHPAREN);
-						GetToken(true);            // get next one (one-token lookahead)
-						return detect_ ? ExprValue(ExprValue::UNSURE) : dic->second(v1, v2, this); // evaluate function
-					}
-
-					// might be double-argument function (eg. roll (6, 2) )
-					std::map<std::string, ThreeArgFunction>::const_iterator ti;
-					ti = ThreeArgumentFunctions.find(word);
-					if (ti != ThreeArgumentFunctions.end())
-					{
-						ExprValue v1 = Expression(true);   // get argument 1 (not commalist)
-						CheckToken(ExprValue::COMMA);
-						ExprValue v2 = Expression(true);   // get argument 2 (not commalist)
-						CheckToken(ExprValue::COMMA);
-						ExprValue v3 = Expression(true);   // get argument 3 (not commalist)
-						CheckToken(ExprValue::RHPAREN);
-						GetToken(true);  // get next one (one-token lookahead)
-						return ti->second(v1, v2, v3); // evaluate function
-					}
-
-					throw std::runtime_error("Function '" + word + "' not implemented.");
+					return HandleHistory3001(word);
 				}
 				else{
-
-					// might be double-argument function (eg. roll (6, 2) )
-					std::map<std::string, TwoArgFunctionNew>::const_iterator di;
-					di = TwoArgumentFunctionsNew.find(word);
-					if (di != TwoArgumentFunctionsNew.end())
-					{
-						ExprValue v1 = Expression(true);   // get argument 1 (not commalist)
-						CheckToken(ExprValue::COMMA);
-						ExprValue v2 = Expression(true);   // get argument 2 (not commalist)
-						CheckToken(ExprValue::RHPAREN);
-						GetToken(true);            // get next one (one-token lookahead)
-						return di->second(v1, v2); // evaluate function
-					}
-
-					// might be double-common-argument function (eg. roll (6, 2) )
-					std::map<std::string, TwoCommonArgFunctionNew>::const_iterator dic;
-					dic = TwoCommonArgumentFunctionsNew.find(word);
-					if (dic != TwoCommonArgumentFunctionsNew.end())
-					{
-						ExprValue v1 = Expression(true);   // get argument 1 (not commalist)
-						CheckToken(ExprValue::COMMA);
-						ExprValue v2 = Expression(true);   // get argument 2 (not commalist)
-						CheckToken(ExprValue::RHPAREN);
-						GetToken(true);            // get next one (one-token lookahead)
-						return detect_ ? ExprValue(ExprValue::UNSURE) : dic->second(v1, v2, this); // evaluate function
-					}
-					throw std::runtime_error("Function '" + word + "' not implemented.");
+					return HandleNew(word);
 				}
 			}
 
@@ -1197,6 +1126,140 @@ namespace utils {
 		} // end of switch on type
 
 	} // end of Parser::Primary 
+
+	const ExprValue ExprParser::HandleHistory3001(const std::string &word){
+		// might be single-argument function (eg. abs (x) )
+		std::map<std::string, OneArgFunction>::const_iterator si;
+		si = OneArgumentFunctions.find(word);
+		if (si != OneArgumentFunctions.end())
+		{
+			ExprValue v = Expression(true);   // get argument
+			CheckToken(ExprValue::RHPAREN);
+			GetToken(true);        // get next one (one-token lookahead)
+			return si->second(v.d_value_);  // evaluate function
+		}
+
+		// might be single-common-argument function (eg. abs (x) )
+		std::map<std::string, OneCommonArgFunction>::const_iterator sic;
+		sic = OneCommonArgumentFunctions.find(word);
+		if (sic != OneCommonArgumentFunctions.end())
+		{
+			ExprValue v = Expression(true);   // get argument
+			CheckToken(ExprValue::RHPAREN);
+			GetToken(true);        // get next one (one-token lookahead)
+			return detect_ ? ExprValue(ExprValue::UNSURE) : sic->second(v, this);  // evaluate function
+		}
+
+		// might be double-argument function (eg. roll (6, 2) )
+		std::map<std::string, TwoArgFunction>::const_iterator di;
+		di = TwoArgumentFunctions.find(word);
+		if (di != TwoArgumentFunctions.end())
+		{
+			ExprValue v1 = Expression(true);   // get argument 1 (not commalist)
+			CheckToken(ExprValue::COMMA);
+			ExprValue v2 = Expression(true);   // get argument 2 (not commalist)
+			CheckToken(ExprValue::RHPAREN);
+			GetToken(true);            // get next one (one-token lookahead)
+			return di->second(v1, v2); // evaluate function
+		}
+
+		// might be double-common-argument function (eg. roll (6, 2) )
+		std::map<std::string, TwoCommonArgFunction>::const_iterator dic;
+		dic = TwoCommonArgumentFunctions.find(word);
+		if (dic != TwoCommonArgumentFunctions.end())
+		{
+			ExprValue v1 = Expression(true);   // get argument 1 (not commalist)
+			CheckToken(ExprValue::COMMA);
+			ExprValue v2 = Expression(true);   // get argument 2 (not commalist)
+			CheckToken(ExprValue::RHPAREN);
+			GetToken(true);            // get next one (one-token lookahead)
+			return detect_ ? ExprValue(ExprValue::UNSURE) : dic->second(v1, v2, this); // evaluate function
+		}
+
+		// might be double-argument function (eg. roll (6, 2) )
+		std::map<std::string, ThreeArgFunction>::const_iterator ti;
+		ti = ThreeArgumentFunctions.find(word);
+		if (ti != ThreeArgumentFunctions.end())
+		{
+			ExprValue v1 = Expression(true);   // get argument 1 (not commalist)
+			CheckToken(ExprValue::COMMA);
+			ExprValue v2 = Expression(true);   // get argument 2 (not commalist)
+			CheckToken(ExprValue::COMMA);
+			ExprValue v3 = Expression(true);   // get argument 3 (not commalist)
+			CheckToken(ExprValue::RHPAREN);
+			GetToken(true);  // get next one (one-token lookahead)
+			return ti->second(v1, v2, v3); // evaluate function
+		}
+
+		throw std::runtime_error("Function '" + word + "' not implemented.");
+
+	}
+
+	const ExprValue ExprParser::HandleNew(const std::string &word){
+		// might be single-argument function (eg. abs (x) )
+		std::map<std::string, OneArgFunctionNew>::const_iterator si;
+		si = OneArgumentFunctionsNew.find(word);
+		if (si != OneArgumentFunctionsNew.end())
+		{
+			ExprValue v = Expression(true);   // get argument
+			CheckToken(ExprValue::RHPAREN);
+			GetToken(true);        // get next one (one-token lookahead)
+			return si->second(v.d_value_);  // evaluate function
+		}
+
+		// might be single-common-argument function (eg. abs (x) )
+		std::map<std::string, OneCommonArgFunctionNew>::const_iterator sic;
+		sic = OneCommonArgumentFunctionsNew.find(word);
+		if (sic != OneCommonArgumentFunctionsNew.end())
+		{
+			ExprValue v = Expression(true);   // get argument
+			CheckToken(ExprValue::RHPAREN);
+			GetToken(true);        // get next one (one-token lookahead)
+			return detect_ ? ExprValue(ExprValue::UNSURE) : sic->second(v, this);  // evaluate function
+		}
+
+		// might be double-argument function (eg. roll (6, 2) )
+		std::map<std::string, TwoArgFunctionNew>::const_iterator di;
+		di = TwoArgumentFunctionsNew.find(word);
+		if (di != TwoArgumentFunctionsNew.end())
+		{
+			ExprValue v1 = Expression(true);   // get argument 1 (not commalist)
+			CheckToken(ExprValue::COMMA);
+			ExprValue v2 = Expression(true);   // get argument 2 (not commalist)
+			CheckToken(ExprValue::RHPAREN);
+			GetToken(true);            // get next one (one-token lookahead)
+			return di->second(v1, v2); // evaluate function
+		}
+
+		// might be double-common-argument function (eg. roll (6, 2) )
+		std::map<std::string, TwoCommonArgFunctionNew>::const_iterator dic;
+		dic = TwoCommonArgumentFunctionsNew.find(word);
+		if (dic != TwoCommonArgumentFunctionsNew.end())
+		{
+			ExprValue v1 = Expression(true);   // get argument 1 (not commalist)
+			CheckToken(ExprValue::COMMA);
+			ExprValue v2 = Expression(true);   // get argument 2 (not commalist)
+			CheckToken(ExprValue::RHPAREN);
+			GetToken(true);            // get next one (one-token lookahead)
+			return detect_ ? ExprValue(ExprValue::UNSURE) : dic->second(v1, v2, this); // evaluate function
+		}
+
+		// might be double-argument function (eg. roll (6, 2) )
+		std::map<std::string, ThreeArgFunction>::const_iterator ti;
+		ti = ThreeArgumentFunctions.find(word);
+		if (ti != ThreeArgumentFunctions.end())
+		{
+			ExprValue v1 = Expression(true);   // get argument 1 (not commalist)
+			CheckToken(ExprValue::COMMA);
+			ExprValue v2 = Expression(true);   // get argument 2 (not commalist)
+			CheckToken(ExprValue::COMMA);
+			ExprValue v3 = Expression(true);   // get argument 3 (not commalist)
+			CheckToken(ExprValue::RHPAREN);
+			GetToken(true);  // get next one (one-token lookahead)
+			return ti->second(v1, v2, v3); // evaluate function
+		}
+		throw std::runtime_error("Function '" + word + "' not implemented.");
+	}
 
 	const ExprValue ExprParser::Term(const bool get) {   // multiply and divide
 

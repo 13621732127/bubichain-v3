@@ -100,9 +100,12 @@ namespace utils {
 	class ExprParser;
 	typedef const ExprValue(*OneCommonArgFunction)  (const ExprValue &arg, ExprParser *parser);
 	typedef const ExprValue(*TwoCommonArgFunction)  (const ExprValue &arg1, const ExprValue &arg2, ExprParser *parser);
-	typedef const ExprValue(*TwoCommonArgFunctionNew)  (const ExprValue &arg1, const ExprValue &arg2, ExprParser *parser);
 	extern std::map<std::string, OneCommonArgFunction>    OneCommonArgumentFunctions;
 	extern std::map<std::string, TwoCommonArgFunction>    TwoCommonArgumentFunctions;
+
+	typedef const ExprValue(*OneCommonArgFunctionNew)  (const ExprValue &arg, ExprParser *parser);
+	typedef const ExprValue(*TwoCommonArgFunctionNew)  (const ExprValue &arg1, const ExprValue &arg2, ExprParser *parser);
+	extern std::map<std::string, OneCommonArgFunctionNew>    OneCommonArgumentFunctionsNew;
 	extern std::map<std::string, TwoCommonArgFunctionNew>    TwoCommonArgumentFunctionsNew;
 
 	class ExprParser {
@@ -148,6 +151,8 @@ namespace utils {
 		const ExprValue AddSubtract(const bool get);
 		const ExprValue Term(const bool get);      // multiply and divide
 		const ExprValue Primary(const bool get);   // primary (base) tokens
+		const ExprValue HandleHistory3001(const std::string &word);
+		const ExprValue HandleNew(const std::string &word);
 
 		inline void CheckToken(const ExprValue::TokenType wanted){
 			if (type_ != wanted)

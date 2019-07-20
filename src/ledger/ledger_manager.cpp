@@ -763,10 +763,13 @@ namespace bubi {
 		//utils::OneCommonArgumentFunctions["ledger"] = DoLedger;
 		utils::OneCommonArgumentFunctions["account"] = DoAccount;
 		utils::TwoCommonArgumentFunctions["jsonpath"] = DoJsonPath;
+
+		utils::OneCommonArgumentFunctionsNew["account"] = DoAccount;
 		utils::TwoCommonArgumentFunctionsNew["jsonpath"] = DoJsonPath;
 	}
 
 	const utils::ExprValue ExprCondition::DoAccount(const utils::ExprValue &arg, utils::ExprParser *parser) {
+		
 		if (!arg.IsString()) {
 			throw std::runtime_error("account's parameter is not a string");
 		}
