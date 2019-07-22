@@ -193,7 +193,6 @@ namespace utils {
 
 	typedef double(*OneArgFunction)  (double arg);
 	typedef const ExprValue(*TwoArgFunction)  (const ExprValue &arg1, const ExprValue &arg2);
-	typedef const ExprValue(*TwoArgFunction)  (const ExprValue &arg1, const ExprValue &arg2);
 	typedef const ExprValue(*ThreeArgFunction)  (const ExprValue &arg1, const ExprValue &arg2, const ExprValue &arg3);
 
 	// maps of function names to functions
