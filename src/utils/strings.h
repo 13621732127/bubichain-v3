@@ -21,7 +21,7 @@ namespace utils {
 	public:
 		static const int kMaxStringLen = 1024 * 1024;
 
-		static int is_number(const std::string& str) {
+		static int IsNumber(const std::string& str) {
 			int base = 10;
 			const char * ptr;
 			int type = 0;
@@ -747,6 +747,37 @@ namespace utils {
 			}
 
 			return v1 < v2;
+		}
+
+
+		//add version 3002
+		/// @brief Convert to int64 type
+		static int64_t Stoi64EX(const std::string &str) {
+			if (0 == str.length()) {
+				return 0;
+			}
+			int64_t v = 0;
+#ifdef WIN32
+			v = _atoi64(str.c_str());
+#else
+			v = atoll(str.c_str());
+#endif
+			return v;
+		}
+
+		static bool SafeStoi64(const std::string &str, int64_t& num){
+			if (str.size() > 20)
+				return false;
+
+			int64_t temNum = Stoi64EX(str);
+			std::string temStr = ToString(temNum);
+			if (0 == str.compare(temStr)){
+				num = temNum;
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
 	};
 

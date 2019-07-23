@@ -30,7 +30,8 @@
 	},
 	"webserver": {
 		"listen_addresses": "0.0.0.0:29333",
-		"remote_authorized": false
+		"remote_authorized": false,
+		"validator_conf_key": "bubi2018"
 	},
 	"wsserver": {
 		"listen_address": "0.0.0.0:7053"

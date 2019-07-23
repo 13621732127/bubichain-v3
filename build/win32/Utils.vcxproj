@@ -33,11 +33,13 @@
     <ClInclude Include="..\..\src\utils\utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\utils\base64.cpp" />
     <ClCompile Include="..\..\src\utils\crypto.cpp" />
     <ClCompile Include="..\..\src\utils\ecc_sm2.cpp" />
     <ClCompile Include="..\..\src\utils\exprparser.cpp" />
     <ClCompile Include="..\..\src\utils\file.cpp" />
     <ClCompile Include="..\..\src\utils\logger.cpp" />
+    <ClCompile Include="..\..\src\utils\modp_b64.cpp" />
     <ClCompile Include="..\..\src\utils\net.cpp" />
     <ClCompile Include="..\..\src\utils\sm3.cpp" />
     <ClCompile Include="..\..\src\utils\sqlparser.cpp" />
