@@ -1169,7 +1169,7 @@ function main(input)
 
     例如
     ```javascript
-    let ret = addressCheck('buQgmhhxLwhdUvcWijzxumUHaNqZtJpWvNsf');
+    let ret = addressCheck('a0024740b934765287b16113adc6bb285d72c124d9e3c1');
     /*
       权限：只读
       返回：成功返回 true，失败返回 false
