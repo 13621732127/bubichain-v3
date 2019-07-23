@@ -1,4 +1,3 @@
-
 #include <utils/logger.h>
 #include "utils/strings.h"
 #include "trie.h"

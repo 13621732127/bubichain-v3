@@ -1,4 +1,3 @@
-
 #include <pcrecpp.h>
 #include "sqlparser.h"
 

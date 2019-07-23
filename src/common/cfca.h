@@ -1,4 +1,3 @@
-
 #ifndef CFCA_H_
 #define CFCA_H_
 

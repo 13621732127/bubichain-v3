@@ -1,4 +1,3 @@
-
 #include "transaction_set.h"
 
 namespace bubi {

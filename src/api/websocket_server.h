@@ -1,4 +1,3 @@
-
 #ifndef WEBSOCKET_SERVER_H_
 #define WEBSOCKET_SERVER_H_
 

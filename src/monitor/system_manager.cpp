@@ -1,4 +1,3 @@
-
 #include <utils/headers.h>
 #include "system_manager.h"
 

@@ -1,4 +1,3 @@
-
 #include "system.h"
 
 #ifdef WIN32

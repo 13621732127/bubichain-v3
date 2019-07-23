@@ -1,4 +1,3 @@
-
 #ifndef WIN32
 #include <sys/prctl.h>
 #endif

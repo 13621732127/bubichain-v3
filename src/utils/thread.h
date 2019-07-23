@@ -1,5 +1,4 @@
-﻿
-#ifndef UTILS_THREAD_H_
+﻿#ifndef UTILS_THREAD_H_
 #define UTILS_THREAD_H_
 
 #include "utils.h"

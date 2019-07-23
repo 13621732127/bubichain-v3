@@ -1,4 +1,3 @@
-
 #include "sm3.h"
 
 namespace utils {

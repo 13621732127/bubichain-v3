@@ -1,4 +1,3 @@
-
 #include <openssl/ecdsa.h>
 #include <openssl/rsa.h>
 #include <openssl/ripemd.h>

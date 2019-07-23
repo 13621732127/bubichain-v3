@@ -1,4 +1,3 @@
-
 #include "ca.h"
 #include "general.h"
 #include <utils/strings.h>

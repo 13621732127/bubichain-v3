@@ -1,4 +1,3 @@
-
 #ifndef MONITOR_MANAGER_H_
 #define MONITOR_MANAGER_H_
 

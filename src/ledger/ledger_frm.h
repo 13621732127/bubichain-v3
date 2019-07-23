@@ -1,5 +1,4 @@
-﻿
-#ifndef LEDGER_FRM_H_
+﻿#ifndef LEDGER_FRM_H_
 #define LEDGER_FRM_H_
 
 #include <utils/utils.h>

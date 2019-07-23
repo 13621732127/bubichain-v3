@@ -1,4 +1,3 @@
-
 #ifndef UTILS_NONCOPYABLE_H_
 #define UTILS_NONCOPYABLE_H_
 

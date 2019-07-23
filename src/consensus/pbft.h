@@ -1,4 +1,3 @@
-
 #ifndef PBFT_H_
 #define PBFT_H_
 

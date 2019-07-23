@@ -1,4 +1,3 @@
-
 #include "timer.h"
 
 namespace utils {

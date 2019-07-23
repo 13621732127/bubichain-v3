@@ -1,4 +1,3 @@
-
 #include <utils/headers.h>
 #include <common/pb2json.h>
 #include "pbft.h"

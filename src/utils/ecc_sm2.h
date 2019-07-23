@@ -1,5 +1,4 @@
-﻿
-#ifndef ECC_SM2_H_
+﻿#ifndef ECC_SM2_H_
 #define ECC_SM2_H_
 
 #include <memory>

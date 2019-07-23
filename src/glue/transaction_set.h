@@ -1,4 +1,3 @@
-
 #ifndef TRANSACTION_SET_
 #define TRANSACTION_SET_
 

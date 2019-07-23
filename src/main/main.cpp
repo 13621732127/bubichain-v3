@@ -1,5 +1,4 @@
-﻿
-#include <utils/headers.h>
+﻿#include <utils/headers.h>
 #include <common/ca_manager.h>
 #include <common/general.h>
 #include <common/storage.h>
@@ -19,6 +18,8 @@
 
 void RunLoop();
 int main(int argc, char *argv[]){
+
+
 	utils::Thread::SetCurrentThreadName("bubi-thread");
 
 	utils::Daemon::InitInstance();

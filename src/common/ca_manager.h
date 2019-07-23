@@ -1,4 +1,3 @@
-
 #ifndef CA_MANAGER_H_
 #define CA_MANAGER_H_
 

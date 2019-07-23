@@ -1,5 +1,4 @@
-﻿
-#ifndef PEER_MANAGER_H_
+﻿#ifndef PEER_MANAGER_H_
 #define PEER_MANAGER_H_
 
 #include <utils/singleton.h>

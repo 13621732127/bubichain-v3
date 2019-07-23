@@ -1,5 +1,4 @@
-﻿
-#include <pcrecpp.h>
+﻿#include <pcrecpp.h>
 #include <utils/strings.h>
 #include <utils/logger.h>
 #include <utils/file.h>

@@ -1,5 +1,4 @@
-﻿
-#ifndef LEDGER_MANAGER_H_
+﻿#ifndef LEDGER_MANAGER_H_
 #define LEDGER_MANAGER_H_
 
 #include <utils/headers.h>
@@ -51,6 +50,9 @@ namespace bubi {
 		bool ConsensusValueFromDB(int64_t seq, protocol::ConsensusValue& request);
 
 		bool DoTransaction(protocol::TransactionEnv& env);
+		std::string GetBottomHash();
+
+		std::shared_ptr<TransactionFrm> GetStackBottomTx();
 
 		virtual void OnTimer(int64_t current_time) override;
 		virtual void OnSlowTimer(int64_t current_time) override;

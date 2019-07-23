@@ -1,4 +1,3 @@
-
 #include <overlay/peer_manager.h>
 #include <ledger/ledger_manager.h>
 #include "glue_manager.h"

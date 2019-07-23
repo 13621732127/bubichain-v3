@@ -1,4 +1,3 @@
-
 #ifndef EXPRPARSER_H_
 #define EXPRPARSER_H_
 
@@ -104,6 +103,11 @@ namespace utils {
 	extern std::map<std::string, OneCommonArgFunction>    OneCommonArgumentFunctions;
 	extern std::map<std::string, TwoCommonArgFunction>    TwoCommonArgumentFunctions;
 
+	typedef const ExprValue(*OneCommonArgFunctionNew)  (const ExprValue &arg, ExprParser *parser);
+	typedef const ExprValue(*TwoCommonArgFunctionNew)  (const ExprValue &arg1, const ExprValue &arg2, ExprParser *parser);
+	extern std::map<std::string, OneCommonArgFunctionNew>    OneCommonArgumentFunctionsNew;
+	extern std::map<std::string, TwoCommonArgFunctionNew>    TwoCommonArgumentFunctionsNew;
+
 	class ExprParser {
 	private:
 		std::string program_;
@@ -116,10 +120,12 @@ namespace utils {
 		int64_t i_value_;
 		bool detect_;
 	public:
+		const static uint32_t LEDGER_VERSION_HISTORY_3001;
+		int64_t ledger_version_;
 
 		// ctor
-		ExprParser(const std::string & program)
-			: program_(program), detect_(false){
+		ExprParser(const std::string & program,int64_t ledger_version)
+			: program_(program), ledger_version_(ledger_version), detect_(false){
 			// insert pre-defined names:
 			symbols_["pi"] = 3.1415926535897932385;
 			symbols_["e"] = 2.7182818284590452354;
@@ -145,6 +151,8 @@ namespace utils {
 		const ExprValue AddSubtract(const bool get);
 		const ExprValue Term(const bool get);      // multiply and divide
 		const ExprValue Primary(const bool get);   // primary (base) tokens
+		const ExprValue HandleHistory3001(const std::string &word);
+		const ExprValue HandleNew(const std::string &word);
 
 		inline void CheckToken(const ExprValue::TokenType wanted){
 			if (type_ != wanted)

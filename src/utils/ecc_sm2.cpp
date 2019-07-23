@@ -1,5 +1,4 @@
-﻿
-#include "common.h"
+﻿#include "common.h"
 #include <openssl/ec.h>
 #include <openssl/bn.h>
 #include <openssl/rand.h>

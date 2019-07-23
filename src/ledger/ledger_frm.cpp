@@ -1,5 +1,4 @@
-﻿
-#include <sstream>
+﻿#include <sstream>
 
 #include <utils/utils.h>
 #include <common/storage.h>

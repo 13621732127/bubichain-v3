@@ -1,5 +1,4 @@
-﻿
-#include <overlay/peer_manager.h>
+﻿#include <overlay/peer_manager.h>
 #include <glue/glue_manager.h>
 #include <api/websocket_server.h>
 #include <monitor/monitor_manager.h>
@@ -755,7 +754,7 @@ namespace bubi {
 	}
 
 	ExprCondition::ExprCondition(const std::string & program, std::shared_ptr<Environment> env , const protocol::ConsensusValue &cons_value) :
-		utils::ExprParser(program),
+		utils::ExprParser(program, LedgerManager::Instance().GetLastClosedLedger().version()),
 		environment_(env),
 		cons_value_(cons_value){}
 	ExprCondition::~ExprCondition() {}
@@ -764,9 +763,13 @@ namespace bubi {
 		//utils::OneCommonArgumentFunctions["ledger"] = DoLedger;
 		utils::OneCommonArgumentFunctions["account"] = DoAccount;
 		utils::TwoCommonArgumentFunctions["jsonpath"] = DoJsonPath;
+
+		utils::OneCommonArgumentFunctionsNew["account"] = DoAccount;
+		utils::TwoCommonArgumentFunctionsNew["jsonpath"] = DoJsonPath;
 	}
 
 	const utils::ExprValue ExprCondition::DoAccount(const utils::ExprValue &arg, utils::ExprParser *parser) {
+		
 		if (!arg.IsString()) {
 			throw std::runtime_error("account's parameter is not a string");
 		}
@@ -882,6 +885,23 @@ namespace bubi {
 	std::shared_ptr<Environment> ExprCondition::GetEnviroment() {
 		return environment_;
 	}
+
+	std::shared_ptr<TransactionFrm> LedgerManager::GetStackBottomTx(){
+		std::stack<std::shared_ptr<TransactionFrm>> transaction_stack = transaction_stack_;
+		if (transaction_stack.size()==0){
+			return NULL;
+		}
+
+		while (true){
+			if (transaction_stack.size()==1){
+				return transaction_stack.top();
+			}
+			else{
+				transaction_stack.pop();
+			}
+		}	
+	}
+
 
 	bool LedgerManager::DoTransaction(protocol::TransactionEnv& env) {
 

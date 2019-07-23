@@ -1001,7 +1001,7 @@ jsonpath(account("bubiV8i6mtcDN5a1X7PbRPuaZuo63QRrHxHGr98s"), ".priv.master_weig
 | jsonpath(json_string, path)     | 获取json对象的属性值                 |
 | LEDGER_SEQ                      | 内置变量，代表最新的区块高度         |
 | LEDGER_TIME                     | 内置变量，代表最新的区块生成时间     |
-| `( )` `=`                       | 嵌套括号                             |
+| `( )` `=`                       | 嵌套括号，函数调用如sqrt(x)          |
 | `*` `/`                         | 乘法、除法                           |
 | `+` `-`                         | 加法、减法                           |
 | `<` `<=`  `>`  `>=`  `==`  `!=` | 比较运算                             |

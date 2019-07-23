@@ -1,4 +1,3 @@
-
 #include <common/general.h>
 #include "monitor.h"
 

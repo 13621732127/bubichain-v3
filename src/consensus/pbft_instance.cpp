@@ -1,4 +1,3 @@
-
 #include <proto/cpp/consensus.pb.h>
 #include "pbft_instance.h"
 #include "pbft.h"

@@ -1,5 +1,3 @@
-
-
 #ifndef UTILS_SINGLETION_H_
 #define UTILS_SINGLETION_H_
 #include<assert.h>

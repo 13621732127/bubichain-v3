@@ -1,5 +1,4 @@
-﻿
-#ifndef OPERATION_FRM_H_
+﻿#ifndef OPERATION_FRM_H_
 #define OPERATION_FRM_H_
 
 #include <utils/common.h>

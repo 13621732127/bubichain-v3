@@ -1,4 +1,3 @@
-
 #ifndef LEDGER_UPGRADE_H_
 #define LEDGER_UPGRADE_H_
 

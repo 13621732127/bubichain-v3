@@ -1,5 +1,4 @@
-﻿
-#include <utils/crypto.h>
+﻿#include <utils/crypto.h>
 #include <common/storage.h>
 #include <common/pb2json.h>
 #include <main/configure.h>

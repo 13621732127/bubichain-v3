@@ -1,4 +1,3 @@
-
 #ifndef PBFT_INSTANCE_
 #define PBFT_INSTANCE_
 

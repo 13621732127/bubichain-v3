@@ -1,4 +1,3 @@
-
 #ifndef TRIE_H_
 #define TRIE_H_
 

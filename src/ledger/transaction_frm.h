@@ -1,5 +1,4 @@
-﻿
-#ifndef TRANSACTION_FRM_H_
+﻿#ifndef TRANSACTION_FRM_H_
 #define TRANSACTION_FRM_H_
 
 #include <unordered_map>

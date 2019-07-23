@@ -1,5 +1,4 @@
-﻿
-#include <ledger/ledger_manager.h>
+﻿#include <ledger/ledger_manager.h>
 #include "transaction_frm.h"
 #include "operation_frm.h"
 #include "contract_manager.h"
@@ -519,7 +518,8 @@ namespace bubi {
 			}
 			
 			std::string javascript = dest_account->GetProtoAccount().contract().payload();
-
+			auto tran = LedgerManager::Instance().GetStackBottomTx();
+			std::string tx_hash = utils::String::BinToHexString(tran->GetContentHash().c_str());
 			if (!javascript.empty()){
 				ContractManager manager;
 	
@@ -529,6 +529,7 @@ namespace bubi {
 					payment.dest_address(),
 					source_account_->GetAccountAddress(),
 					transaction_->GetTransactionString(),
+					tx_hash,
 					index_,
 					transaction_->ledger_->GetConsensusValueString(),
 					err_msg
@@ -641,6 +642,8 @@ namespace bubi {
 			proto_dest_account.set_balance(proto_dest_account.balance() + ope.amount());
 			
 			std::string javascript = dest_account_ptr->GetProtoAccount().contract().payload();
+			auto tran = LedgerManager::Instance().GetStackBottomTx();
+			std::string tx_hash = utils::String::BinToHexString(tran->GetContentHash().c_str());
 			if (!javascript.empty()) {
 				ContractManager manager;
 
@@ -650,6 +653,7 @@ namespace bubi {
 					ope.dest_address(),
 					source_account_->GetAccountAddress(),
 					transaction_->GetTransactionString(),
+					tx_hash,
 					index_,
 					transaction_->ledger_->GetConsensusValueString(),
 					err_msg)) {

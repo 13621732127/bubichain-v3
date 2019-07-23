@@ -1,4 +1,3 @@
-
 #include "general.h"
 
 namespace bubi {

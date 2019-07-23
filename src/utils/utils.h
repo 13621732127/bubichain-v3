@@ -1,5 +1,4 @@
-﻿
-#ifndef UTIS_UTILS_H_
+﻿#ifndef UTIS_UTILS_H_
 #define UTIS_UTILS_H_
 
 #include <stack>

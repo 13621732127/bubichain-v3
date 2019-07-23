@@ -1,4 +1,3 @@
-
 #ifndef PEER_NETWORK_H_
 #define PEER_NETWORK_H_
 

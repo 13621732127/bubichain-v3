@@ -1,4 +1,3 @@
-
 #ifndef TEST_SQLPARSER_H_
 #define TEST_SQLPARSER_H_
 

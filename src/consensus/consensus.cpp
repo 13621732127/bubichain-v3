@@ -1,4 +1,3 @@
-
 #include <utils/crypto.h>
 #include <utils/logger.h>
 #include <common/storage.h>

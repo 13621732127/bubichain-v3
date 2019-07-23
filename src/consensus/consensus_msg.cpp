@@ -1,4 +1,3 @@
-
 #include <utils/headers.h>
 #include "pbft.h"
 #include "consensus_msg.h"

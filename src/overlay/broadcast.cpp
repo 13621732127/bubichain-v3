@@ -1,4 +1,3 @@
-
 #include <json/value.h>
 #include <utils/headers.h>
 #include <common/general.h>

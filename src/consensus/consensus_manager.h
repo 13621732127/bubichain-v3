@@ -1,5 +1,4 @@
-﻿
-#ifndef CONSENSUS_MANAGER_H_
+﻿#ifndef CONSENSUS_MANAGER_H_
 #define CONSENSUS_MANAGER_H_
 
 #include <utils/singleton.h>

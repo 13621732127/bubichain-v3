@@ -1,5 +1,4 @@
-﻿
-#include <utils/headers.h>
+﻿#include <utils/headers.h>
 #include <common/general.h>
 #include <main/configure.h>
 #include <overlay/peer_manager.h>

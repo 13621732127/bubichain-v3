@@ -1,4 +1,3 @@
-
 #ifndef CONFIGURE_H_
 #define CONFIGURE_H_
 

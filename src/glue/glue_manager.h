@@ -1,5 +1,4 @@
-﻿
-#ifndef GLUE_MANAGER_
+﻿#ifndef GLUE_MANAGER_
 #define GLUE_MANAGER_
 
 #include <utils/singleton.h>

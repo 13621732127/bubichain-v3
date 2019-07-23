@@ -1,4 +1,3 @@
-
 #ifndef PRIVATE_KEY_H_
 #define PRIVATE_KEY_H_
 

@@ -1,4 +1,3 @@
-
 #ifndef CONSENSUS_MSG_
 #define CONSENSUS_MSG_
 

@@ -1,4 +1,3 @@
-
 #ifndef CONSENSUS_H_
 #define CONSENSUS_H_
 

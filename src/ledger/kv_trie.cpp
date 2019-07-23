@@ -1,4 +1,3 @@
-
 #include "kv_trie.h"
 
 namespace bubi{

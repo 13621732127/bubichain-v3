@@ -1,4 +1,3 @@
-
 #include <common/storage.h>
 #include "ledger_manager.h"
 

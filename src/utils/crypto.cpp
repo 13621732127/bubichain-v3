@@ -1,4 +1,3 @@
-
 #include <openssl/err.h>
 #include <openssl/ecdsa.h>
 #include <openssl/sha.h>

@@ -1,4 +1,3 @@
-
 #include <openssl/ripemd.h>
 #include <utils/headers.h>
 #include <utils/sm3.h>

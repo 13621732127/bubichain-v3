@@ -1,5 +1,4 @@
-﻿
-#include <common/storage.h>
+﻿#include <common/storage.h>
 #include <common/pb2json.h>
 #include <ledger/ledger_manager.h>
 #include "account.h"

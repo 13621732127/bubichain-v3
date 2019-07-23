@@ -1,5 +1,4 @@
-﻿
-#ifndef BUBI_ACCOUNT_H_
+﻿#ifndef BUBI_ACCOUNT_H_
 #define BUBI_ACCOUNT_H_
 
 #include <utils/base_int.h>

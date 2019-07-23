@@ -1,4 +1,3 @@
-
 #ifndef SM3_H
 #define SM3_H
 

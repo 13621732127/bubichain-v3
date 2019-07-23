@@ -1,4 +1,3 @@
-﻿
 #include <utils/timestamp.h>
 #include <utils/logger.h>
 #include "general.h"
