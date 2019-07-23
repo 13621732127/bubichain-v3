@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
 						printf("error: missing parameter, need 7 parameter (root_file_path, root_file_name, common_name, email, domain, days, private_password)\n");
 						break;
 					}
-					if (!utils::String::is_number(argv[7])) {
+					if (!utils::String::IsNumber(argv[7])) {
 						printf("error: days must be number \n");
 						break;
 					}
@@ -107,7 +107,7 @@ int main(int argc, char** argv) {
 						printf("error: missing parameter, need 5 parameter (root_ca_file_path, root_private_file_path, root_private_password, request_file_path, days\n");
 						break;
 					}
-					if (!utils::String::is_number(argv[6])) {
+					if (!utils::String::IsNumber(argv[6])) {
 						printf("error: days must be number \n");
 						break;
 					}

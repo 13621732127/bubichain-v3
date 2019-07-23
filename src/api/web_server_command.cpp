@@ -1,16 +1,3 @@
-/*
-Copyright Bubi Technologies Co., Ltd. 2017 All Rights Reserved.
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
 #include <utils/headers.h>
 #include <common/private_key.h>
 #include <common/general.h>
@@ -236,7 +223,48 @@ namespace bubi {
 		Json::Value reply_json = Json::Value(Json::objectValue);
 
 		do {
-			if (!request.peer_address_.IsLoopback()) {
+			// if validator_conf_key is empty, limit local url, otherwise limit validator_conf_key
+			if (!request.body.empty()) {
+				Json::Value body;
+				if (!body.fromString(request.body)) {
+					LOG_ERROR("Parse request body json failed");
+					error_code = protocol::ERRCODE_ACCESS_DENIED;
+					error_desc = "request must being json format";
+					break;
+				}
+				std::string validator_conf_key = body.fromString(request.body) ? body["validator_conf_key"].asString() : "";
+				int64_t timestamp = body.isMember("timestamp") ? (body["timestamp"].isString() ? -2 : body["timestamp"].asUInt64()) : -1;
+				if (validator_conf_key.empty()) {
+					error_code = protocol::ERRCODE_ACCESS_DENIED;
+					error_desc = "The validator_conf_key cannot be empty";
+					break;
+				}
+				if (-2 == timestamp) {
+					error_code = protocol::ERRCODE_ACCESS_DENIED;
+					error_desc = "The timestamp must be number";
+					break;
+				}
+				else if (-1 == timestamp) {
+					error_code = protocol::ERRCODE_ACCESS_DENIED;
+					error_desc = "The timestamp cannot be empty";
+					break;
+				}
+				else if (utils::Timestamp::HighResolution() - timestamp * 1000 > utils::SECOND_UNITS_PER_DAY * utils::MICRO_UNITS_PER_SEC ||
+					timestamp * 1000 - utils::Timestamp::HighResolution() > utils::SECOND_UNITS_PER_DAY * utils::MICRO_UNITS_PER_SEC) {
+					error_code = protocol::ERRCODE_ACCESS_DENIED;
+					error_desc = "The timestamp was wrong, please check";
+					break;
+				}
+
+				std::string code_time = Configure::Instance().webserver_configure_.validator_conf_key + utils::String::Format("%lld", timestamp);
+				std::string code_hash = utils::String::BinToHexString(utils::Sha256::Crypto(code_time));
+				if (code_hash.compare(validator_conf_key) != 0) {
+					error_code = protocol::ERRCODE_ACCESS_DENIED;
+					error_desc = "This validator_conf_key was wrong ,please check!";
+					break;
+				}
+			}
+			else if (!request.peer_address_.IsLoopback()) {
 				error_code = protocol::ERRCODE_ACCESS_DENIED;
 				error_desc = "This url should be called from local";
 				break;

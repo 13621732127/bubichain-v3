@@ -466,12 +466,23 @@ POST /getTransactionBlob
 POST /confValidator?add=a00252641e461a28e0f2d19e01fa9ce4ba89af24d5f0c6&del=a0027fb6fd8e8ffbf64cf10efebd9278735d5e39a6325e
 ```
 
+body 数据格式
+
+```json
+{
+    "validator_conf_key": "420979ee02ce8778d6ff1c2e426e0c7a7c73a7eb59cecc6da3cb07e6757bf1bb",//这里填写的是一个hash值，是validator_conf_key（bubi.json中配置项）+timestamp(下面的参数)的SHA256生成的
+    "timestamp": 1521681457285 // 本地时间戳，与节点系统时间戳相差不能超过1天
+}
+```
+
 |参数|描述
 |:--- | --- 
 |add |逗号分隔的需要添加的验证节点列表
 |del |逗号分隔的需要删除的验证节点列表
 
-注：1. 本操作必须由本机回环地址提交。 2. 需要大部分的（三分之二以上）验证节点都执行添加/删除操作，且共识成功后才能添加/删除成功。
+注：1. 当body不为空时，验证validator_conf_key; 当body为空时，本操作必须由本机回环地址提交。 
+
+   2. 需要大部分的（三分之二以上）验证节点都执行添加/删除操作，且共识成功后才能添加/删除成功。
 
 
 ## 定义交易
@@ -1154,6 +1165,198 @@ function main(input)
     var result = callBackDoOperation(transaction);
     /*result 为true或false*/
     ```
+- ##### 地址合法性检查
+
+    `addressCheck(address);`
+    - address 地址参数，字符串
+
+    例如
+    ```javascript
+    let ret = addressCheck('a0024740b934765287b16113adc6bb285d72c124d9e3c1');
+    /*
+      权限：只读
+      返回：成功返回 true，失败返回 false
+    */
+
+    ```
+
+- ##### 字符串数字合法性检查
+
+    `stoI64Check(strNumber);`
+    - strNumber：字符串数字参数
+
+    例如
+    ```javascript
+    let ret = stoI64Check('12345678912345');
+    /*
+      权限：只读
+      返回：成功返回 true，失败返回 false
+    */
+
+    ```
+
+- ##### 64位加法
+
+    `int64Add(left_value, right_value);`
+    - left_value: 左值
+    - right_value：右值
+
+    例如
+    ```javascript
+    let ret = int64Add('12345678912345', 1);
+    /*
+      权限：只读
+      返回：成功返回字符串 '12345678912346', 失败抛异常
+    */
+
+    ```
+
+- ##### 64位减法
+
+    `int64Sub(left_value, right_value);`
+    - left_value: 左值
+    - right_value：右值
+
+    例如
+    ```javascript
+    let ret = int64Sub('12345678912345', 1);
+    /*
+      权限：只读
+      返回：成功返回字符串 '123456789123464'，失败抛异常
+    */
+
+    ```
+    
+- ##### 64位乘法
+
+    `int64Mul(left_value, right_value);`
+    - left_value: 左值
+    - right_value：右值
+
+    例如
+    ```javascript
+    let ret = int64Mul('12345678912345', 2);
+    /*
+      权限：只读
+      返回：成功返回字符串 '24691357824690'，失败抛异常
+    */
+
+    ```
+
+- ##### 64位除法
+
+    `int64Div(left_value, right_value);`
+    - left_value: 左值
+    - right_value：右值
+
+    例如
+    ```javascript
+    let ret = int64Div('12345678912345', 2);
+    /*
+      权限：只读
+      返回：成功返回 '6172839456172'，失败抛异常
+    */
+
+    ```
+
+- ##### 64位取模
+
+    `int64Mod(left_value, right_value);`
+    - left_value: 左值
+    - right_value：右值
+
+    例如
+    ```javascript
+    let ret = int64Mod('12345678912345', 2);
+    /*
+      权限：只读
+      返回：成功返回字符串 '1'，失败抛异常
+    */
+
+    ```
+
+- ##### 64位比较
+    `int64Compare(left_value, right_value);`
+
+    - 返回值 1：左值大于右值，0：等于，-1 ：小于
+    - left_value: 左值
+    - right_value：右值
+
+    例如
+    ```javascript
+    let ret = int64Compare('12345678912345', 2);
+    /*
+      权限：只读
+      返回：成功返回数字 1（左值大于右值），失败抛异常
+    */
+
+    ```
+- ##### 断言
+
+    `assert(condition[, message]);`
+     - condition: 断言变量
+     - message: 可选，失败时抛出异常的消息
+
+    例如
+    ```javascript
+    assert(1===1, "Not valid");
+    /*
+      权限：只读
+      返回：成功返回 true，失败抛异常  
+    */
+    ```
+- ##### sha256计算
+    `sha256(data[, dataType]);`
+
+    - data: 待计算hash的原始数据，根据dataType不同，填不同格式的数据。
+    - dataType：data 的数据类型，整数，可选字段，默认为0。0：base16编码后的字符串，如"61626364"；1：普通原始字符串，如"abcd"；2：base64编码后的字符串,如"YWJjZA=="。如果对二进制数据hash计算，建议使用base16或者base64编码。
+    - 返回值: 成功会hash之后的base16编码后的字符串，失败会返回 false
+
+    例如
+    ```javascript
+    let ret = sha256('61626364');
+    /*
+      权限：只读
+      功能：对
+      返回：成功返回64个字节的base16格式字符串 '88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589'，失败返回false
+    */
+
+    ```
+
+          
+- ##### 校验签名是否合法
+    `ecVerify(signedData, publicKey,blobData [, blobDataType]);`
+
+    - signedData: 签名数据，base16编码的字符串。
+    - publicKey：公钥，base16编码的字符串。
+    - blobData：原始数据，根据blobDataType，填不同格式的数据。
+    - blobDataType：blobData的数据类型，整数，可选字段，默认为0。0：base16编码后的字符串，如"61626364"；1：普通原始字符串，如"abcd"；2：base64编码后的字符串,如"YWJjZA=="。如果对二进制数据校验，建议使用base16或者base64编码。
+    - 返回值: 成功会返回true，失败会返回 false
+
+    例如
+    ```javascript
+    let ret = ecVerify('3471aceac411975bb83a22d7a0f0499b4bfcb504e937d29bb11ea263b5f657badb40714850a1209a0940d1ccbcfc095c4b2d38a7160a824a6f9ba11f743ad80a', 'b0014e28b305b56ae3062b2cee32ea5b9f3eccd6d738262c656b56af14a3823b76c2a4adda3c', 'abcd', 1);
+    /*
+      权限：只读
+      返回：成功会返回true，失败会返回 false
+    */
+
+    ```
+- ##### 公钥转地址
+
+    `toAddress(public_key);`
+    - public_key 公钥，base16编码的字符串
+    - 成功，返回账号地址；失败返回false
+
+    例如
+    ```javascript
+    let ret = toAddress('b001e9fd31a0fc25af3123f67575cdd0c6b8c2192eead9f58728a3fb46accdc0faa67f');
+    /*
+      权限：只读
+      返回：成功返回 "a0012ea403227b861289ed5fcedd30e51e85ef7397ebc6"，失败返回false
+    */
+
+    ```
 
 #### 内置变量
 
@@ -1170,6 +1373,9 @@ function main(input)
     bar的值是Y合约的账号地址。
     */
     ```
+- ##### 交易的哈希值
+    `txHash`
+    交易的hash值
 
 - ##### 调用者的地址
     sender

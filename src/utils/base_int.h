@@ -1,35 +1,3 @@
-/*
-base_int.h
-An unsigned 128 bit integer type for C++
-Copyright (c) 2014 Jason Lee @ calccrypto at gmail.com
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-With much help from Auston Sterling
-
-Thanks to Stefan Deigmller for finding
-a bug in operator*.
-
-Thanks to Franois Dessenne for convincing me
-to do a general rewrite of this class.
-*/
-
 #ifndef __UINT128_T__
 #define __UINT128_T__
 
@@ -506,5 +474,43 @@ namespace utils {
 	bool bigDivide(int64_t& result, int64_t A, int64_t B, int64_t C);
 	bool bigDivide(uint64_t& result, uint64_t A, uint64_t B, uint64_t C);
 	int64_t  bigDivide(int64_t A, int64_t B, int64_t C);
+
+	//CAUTION: not suitable for all kinds of unsigned integer
+	template<class T>
+	bool SafeIntMul(volatile T x, volatile T y, T& r){
+		volatile T mul = x * y;
+
+		bool safe = x == 0 || mul / x == y;
+		if (safe) r = mul;
+
+		return safe;
+	}
+
+	//CAUTION: not suitable for all kinds of unsigned integer
+	template<class T>
+	bool SafeIntAdd(volatile T x, volatile T y, T& r){
+		volatile T sum = x + y;
+
+		bool negOver = x < 0 && y < 0 && sum >= 0;
+		bool posOver = x >= 0 && y >= 0 && sum < 0;
+		bool safe = !negOver && !posOver;
+
+		if (safe) r = sum;
+
+		return safe;
+	}
+
+	//CAUTION: not suitable for all kinds of unsigned integer
+	template<class T>
+	bool SafeIntSub(volatile T x, volatile T y, T& r){
+		volatile T dif = x - y;
+		bool negOver = x < 0 && y >= 0 && dif >= 0;
+		bool posOver = x >= 0 && y < 0 && dif <= 0;
+		bool safe = !negOver && !posOver;
+
+		if (safe) r = dif;
+
+		return safe;
+	}
 }
 #endif

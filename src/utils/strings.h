@@ -1,16 +1,4 @@
-﻿/*
-Copyright Bubi Technologies Co., Ltd. 2017 All Rights Reserved.
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-http://www.apache.org/licenses/LICENSE-2.0
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
-
+﻿
 #ifndef UTILS_STRING_UTIL_H_
 #define UTILS_STRING_UTIL_H_
 
@@ -33,7 +21,7 @@ namespace utils {
 	public:
 		static const int kMaxStringLen = 1024 * 1024;
 
-		static int is_number(const std::string& str) {
+		static int IsNumber(const std::string& str) {
 			int base = 10;
 			const char * ptr;
 			int type = 0;
@@ -759,6 +747,37 @@ namespace utils {
 			}
 
 			return v1 < v2;
+		}
+
+
+		//add version 3002
+		/// @brief Convert to int64 type
+		static int64_t Stoi64EX(const std::string &str) {
+			if (0 == str.length()) {
+				return 0;
+			}
+			int64_t v = 0;
+#ifdef WIN32
+			v = _atoi64(str.c_str());
+#else
+			v = atoll(str.c_str());
+#endif
+			return v;
+		}
+
+		static bool SafeStoi64(const std::string &str, int64_t& num){
+			if (str.size() > 20)
+				return false;
+
+			int64_t temNum = Stoi64EX(str);
+			std::string temStr = ToString(temNum);
+			if (0 == str.compare(temStr)){
+				num = temNum;
+				return true;
+			}
+			else{
+				return false;
+			}
 		}
 	};
 
