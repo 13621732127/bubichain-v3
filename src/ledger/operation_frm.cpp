@@ -519,7 +519,7 @@ namespace bubi {
 			
 			std::string javascript = dest_account->GetProtoAccount().contract().payload();
 			auto tran = LedgerManager::Instance().GetStackBottomTx();
-			std::string tx_hash = utils::String::BinToHexString(tran->GetContentHash().c_str());
+			std::string tx_hash = utils::String::BinToHexString(tran->GetContentHash());
 			if (!javascript.empty()){
 				ContractManager manager;
 	
@@ -672,7 +672,7 @@ namespace bubi {
 			
 			std::string javascript = dest_account_ptr->GetProtoAccount().contract().payload();
 			auto tran = LedgerManager::Instance().GetStackBottomTx();
-			std::string tx_hash = utils::String::BinToHexString(tran->GetContentHash().c_str());
+			std::string tx_hash = utils::String::BinToHexString(tran->GetContentHash());
 			if (!javascript.empty()) {
 				ContractManager manager;
 
