@@ -121,6 +121,8 @@ namespace bubi {
 	SSLConfigure::~SSLConfigure() {}
 
 	bool SSLConfigure::Load(const Json::Value &value) {
+		ConfigureBase::GetValue(value, "cert_server_domain", cert_server_domain_);
+		ConfigureBase::GetValue(value, "cert_server_port", cert_server_port_);
 		ConfigureBase::GetValue(value, "chain_file", chain_file_);
 		ConfigureBase::GetValue(value, "private_key_file", private_key_file_);
 		ConfigureBase::GetValue(value, "private_password", private_password_);

@@ -1,0 +1,22 @@
+{
+    "db": {
+        "cert_db_path": "data/cert.db"
+    },
+    "webserver": {
+        "listen_addresses": "0.0.0.0:26002",
+		"index_name": "",
+		"directory": "web/",
+		"ssl_enable": false,
+		"query_limit": 1000,
+		"multiquery_limit": 100,
+		"thread_count": 8
+    },
+    "logger": {
+        "path": "log/bumo.log",
+        "dest": "FILE|STDOUT|STDERR",
+        "level": "ALL",
+        "time_capacity": 1,
+        "size_capacity": 10,
+        "expire_days": 10
+    }
+}

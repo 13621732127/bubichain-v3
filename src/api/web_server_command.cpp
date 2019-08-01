@@ -5,12 +5,72 @@
 #include <main/configure.h>
 #include <overlay/peer_manager.h>
 #include <glue/glue_manager.h>
+#include <common/ca_manager.h>
+#include <HttpClient.h>
 #include "web_server.h"
 
 namespace bubi {
 
 	void WebServer::SubmitTransaction(const http::server::request &request, std::string &reply) {
+		// check certificate
+		char serial[128] = { 0 };
+		bool cert_enabled = false;
 
+		bubi::CAManager ca;
+		char out_msg[256] = { 0 };
+		bubi::Configure &config = bubi::Configure::Instance();
+		std::string node_private_key = config.p2p_configure_.node_private_key_;
+		std::string verify_file = config.p2p_configure_.ssl_configure_.verify_file_;
+		std::string chain_file = config.p2p_configure_.ssl_configure_.chain_file_;
+		std::string private_key_file = config.p2p_configure_.ssl_configure_.private_key_file_;
+		std::string private_password = config.p2p_configure_.ssl_configure_.private_password_;
+		std::string domain = "";// config.p2p_configure_.ca_server_configure_.domain_;
+		std::string path = "";//config.p2p_configure_.ca_server_configure_.path_;
+		int port = 8080;//config.p2p_configure_.ca_server_configure_.port_;
+		int iret = ca.CheckCertificate(node_private_key, verify_file, chain_file, private_key_file, private_password,
+			domain, path, port, serial, cert_enabled, out_msg);
+		if (0 == iret) {
+			LOG_ERROR("check certificate failed, because %s", out_msg);
+			Json::Value reply_json;
+			reply_json["results"][Json::UInt(0)]["error_code"] = 155;
+			reply_json["results"][Json::UInt(0)]["error_desc"] = "the user certificate is invalid.";
+			reply_json["success_count"] = Json::UInt(0);
+			reply = reply_json.toStyledString();
+			return;
+		}
+
+		std::string url_path = "/get_cert_status?serial=";
+		url_path += serial;
+		std::string cert_status = "";
+		int ret = http_request(config.p2p_configure_.ssl_configure_.cert_server_domain_, url_path, (unsigned short)config.p2p_configure_.ssl_configure_.cert_server_port_, cert_status);
+		if (200 != ret) {
+			LOG_ERROR("the cert manager server ($s:%d) does not start.", config.p2p_configure_.ssl_configure_.cert_server_domain_, config.p2p_configure_.ssl_configure_.cert_server_port_);
+		}
+		if (200 == ret) {
+			Json::Value status;
+			status.fromString(cert_status);
+			if (status["error_code"].asInt() == 0) {
+				if (status["result"]["status"].asInt() == 1) {
+					LOG_ERROR("the user certificate (%s) is canceled.", serial);
+					Json::Value reply_json;
+					reply_json["results"][Json::UInt(0)]["error_code"] = 156;
+					reply_json["results"][Json::UInt(0)]["error_desc"] = "the user certificate is canceled.";
+					reply_json["success_count"] = Json::UInt(0);
+					reply = reply_json.toStyledString();
+					return;
+				}
+				else if (status["result"]["status"].asInt() == 2) {
+					LOG_ERROR("the user certificate (%s) is frozen.", serial);
+					Json::Value reply_json;
+					reply_json["results"][Json::UInt(0)]["error_code"] = 156;
+					reply_json["results"][Json::UInt(0)]["error_desc"] = "the user certificate is frozen.";
+					reply_json["success_count"] = Json::UInt(0);
+					reply = reply_json.toStyledString();
+					return;
+				}
+			} 
+		}
+		
 		std::string tx_hash = "";
 		Json::Value body;
 		if (!body.fromString(request.body)) {

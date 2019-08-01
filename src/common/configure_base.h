@@ -47,6 +47,8 @@ namespace bubi {
 		SSLConfigure();
 		~SSLConfigure();
 
+        std::string cert_server_domain_;
+		int32_t cert_server_port_;
 		std::string chain_file_;
 		std::string private_key_file_;
 		std::string private_password_;

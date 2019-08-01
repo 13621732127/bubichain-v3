@@ -15,6 +15,7 @@
 #include <api/websocket_server.h>
 #include <ledger/contract_manager.h>
 #include <monitor/monitor_manager.h>
+#include <HttpClient.h>
 #include "configure.h"
 
 void RunLoop();
@@ -108,6 +109,26 @@ int main(int argc, char *argv[]){
 		if (0 == iret) {
 			LOG_ERROR("check certificate failed, because %s", out_msg);
 			break;
+		}
+
+		std::string url_path = "/get_cert_status?serial=";
+		url_path += serial;
+		std::string cert_status = "";
+		int ret = http_request(config.p2p_configure_.ssl_configure_.cert_server_domain_, url_path, (unsigned short)config.p2p_configure_.ssl_configure_.cert_server_port_, cert_status);
+		if (200 != ret) {
+			LOG_ERROR("the cert manager server ($s:%d) does not start", config.p2p_configure_.ssl_configure_.cert_server_domain_, config.p2p_configure_.ssl_configure_.cert_server_port_);
+		}
+		if (200 == ret) {
+			Json::Value status;
+			status.fromString(cert_status);
+			if (status["error_code"].asInt() == 0 && status["result"]["status"].asInt() == 1) {
+				LOG_ERROR("the entity cert (%s) was canceled.", serial);
+				break;
+			}
+			else if (status["error_code"].asInt() == 0 && status["result"]["status"].asInt() == 2) {
+				LOG_ERROR("the entity cert (%s) was frozen.", serial);
+				break;
+			}
 		}
 
 		bubi::Storage &storage = bubi::Storage::Instance();

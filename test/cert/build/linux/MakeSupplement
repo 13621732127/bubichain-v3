@@ -1,0 +1,35 @@
+soft_link:
+	sudo ln -s /usr/local//scripts/cert /etc/init.d/cert;\
+	sudo ln -s /usr/local//scripts/certd /etc/init.d/certd;\
+	sudo ln -s -f /etc/init.d/cert /etc/rc1.d/S99cert;\
+	sudo ln -s -f /etc/init.d/cert /etc/rc1.d/S99cert;\
+	sudo ln -s -f /etc/init.d/cert /etc/rc2.d/S99cert;\
+	sudo ln -s -f /etc/init.d/cert /etc/rc3.d/S99cert;\
+	sudo ln -s -f /etc/init.d/cert /etc/rc4.d/S99cert;\
+	sudo ln -s -f /etc/init.d/cert /etc/rc5.d/S99cert;\
+	sudo ln -s -f /etc/init.d/certd /etc/rc1.d/S50certd;\
+	sudo ln -s -f /etc/init.d/certd /etc/rc1.d/S50certd;\
+	sudo ln -s -f /etc/init.d/certd /etc/rc2.d/S50certd;\
+	sudo ln -s -f /etc/init.d/certd /etc/rc3.d/S50certd;\
+	sudo ln -s -f /etc/init.d/certd /etc/rc4.d/S50certd;\
+	sudo ln -s -f /etc/init.d/certd /etc/rc5.d/S50certd;\
+	sudo mkdir -p /usr/local//data;
+	sudo mkdir -p /usr/local//coredump;
+
+uninstall:
+	rm -f /etc/rc1.d/S99cert;\
+	rm -f /etc/rc2.d/S99cert;\
+	rm -f /etc/rc3.d/S99cert;\
+	rm -f /etc/rc4.d/S99cert;\
+	rm -f /etc/rc5.d/S99cert;\
+	rm -f /etc/init.d/cert;\
+	rm -f /etc/rc1.d/S50certd;\
+	rm -f /etc/rc2.d/S50certd;\
+	rm -f /etc/rc3.d/S50certd;\
+	rm -f /etc/rc4.d/S50certd;\
+	rm -f /etc/rc5.d/S50certd;\
+	rm -f /etc/init.d/bumod;\
+	rm -rf /usr/local//bin;\
+	rm -rf /usr/local//cfca;\
+	rm -rf /usr/local//config;\
+	rm -rf /usr/local//scripts

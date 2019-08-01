@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="api">
+      <UniqueIdentifier>{ef75dfec-db2d-4639-95d2-bd17fd6265ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="main">
+      <UniqueIdentifier>{3c4823a5-9516-47e0-a232-f583bcca9dc0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\cert_manager\main.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cert_manager\cert_configure.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cert_manager\cert_storage.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\cert_manager\cert_server.cpp">
+      <Filter>api</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\cert_manager\cert_configure.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\cert_manager\cert_storage.h">
+      <Filter>main</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\cert_manager\cert_server.h">
+      <Filter>api</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
