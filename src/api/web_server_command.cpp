@@ -44,7 +44,7 @@ namespace bubi {
 		std::string cert_status = "";
 		int ret = http_request(config.p2p_configure_.ssl_configure_.cert_server_domain_, url_path, (unsigned short)config.p2p_configure_.ssl_configure_.cert_server_port_, cert_status);
 		if (200 != ret) {
-			LOG_ERROR("the cert manager server ($s:%d) does not start.", config.p2p_configure_.ssl_configure_.cert_server_domain_, config.p2p_configure_.ssl_configure_.cert_server_port_);
+			LOG_ERROR("the cert manager server (%s:%d) does not start.", config.p2p_configure_.ssl_configure_.cert_server_domain_.c_str(), config.p2p_configure_.ssl_configure_.cert_server_port_);
 		}
 		if (200 == ret) {
 			Json::Value status;
