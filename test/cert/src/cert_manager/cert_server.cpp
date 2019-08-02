@@ -124,7 +124,7 @@ namespace bumo {
 		KeyValueDb *db = CertStorage::Instance().cert_db();
 		int32_t ret = db->Get(body["serial"].asString(), status);
 		if (ret > 0 && status.compare("1") == 0) {
-			LOG_ERROR("The certificate (%s) was canceled", body["serial"].asString());
+			LOG_ERROR("The certificate (%s) was canceled", body["serial"].asCString());
 			reply_json["error_desc"] = "the certificate was canceled";
 			reply_json["error_code"] = Json::UInt(1);
 			reply = reply_json.toStyledString();
@@ -133,7 +133,7 @@ namespace bumo {
 
 		std::string cancelStatus = "1";
 		if (!db->Put(body["serial"].asString(), cancelStatus)) {
-			LOG_ERROR("Failed to cancel the cert (%s), error desc(%s)", body["serial"].asString(), db->error_desc().c_str());
+			LOG_ERROR("Failed to cancel the cert (%s), error desc(%s)", body["serial"].asCString(), db->error_desc().c_str());
 
 		}
 		reply_json["error_desc"] = "";
@@ -157,14 +157,14 @@ namespace bumo {
 		KeyValueDb *db = CertStorage::Instance().cert_db();
 		int32_t ret = db->Get(body["serial"].asString(), status);
 		if (ret > 0 && status.compare("1") == 0) {
-			LOG_ERROR("The certificate (%s) was canceled", body["serial"].asString());
+			LOG_ERROR("The certificate (%s) was canceled", body["serial"].asCString());
 			reply_json["error_desc"] = "the certificate was canceled";
 			reply_json["error_code"] = Json::UInt(1);
 			reply = reply_json.toStyledString();
 			return;
 		}
 		if (ret > 0 && status.compare("2") == 1) {
-			LOG_ERROR("The certificate (%s) was frozen", body["serial"].asString());
+			LOG_ERROR("The certificate (%s) was frozen", body["serial"].asCString());
 			reply_json["error_desc"] = "the certificate was frozen";
 			reply_json["error_code"] = Json::UInt(1);
 			reply = reply_json.toStyledString();
@@ -173,7 +173,7 @@ namespace bumo {
 
 		std::string frozenStatus = "2";
 		if (!db->Put(body["serial"].asString(), frozenStatus)) {
-			LOG_ERROR("Failed to freeze the cert (%s), error desc(%s)", body["serial"].asString(), db->error_desc().c_str());
+			LOG_ERROR("Failed to freeze the cert (%s), error desc(%s)", body["serial"].asCString(), db->error_desc().c_str());
 
 		}
 		reply_json["error_desc"] = "";
@@ -197,7 +197,7 @@ namespace bumo {
 		KeyValueDb *db = CertStorage::Instance().cert_db();
 		int32_t ret = db->Get(body["serial"].asString(), status);
 		if (ret > 0 && status.compare("2") != 0 || ret <= 0) {
-			LOG_ERROR("The certificate (%s) was not frozen", body["serial"].asString());
+			LOG_ERROR("The certificate (%s) was not frozen", body["serial"].asCString());
 			reply_json["error_desc"] = "the certificate was not frozen";
 			reply_json["error_code"] = Json::UInt(1);
 			reply = reply_json.toStyledString();
@@ -206,7 +206,7 @@ namespace bumo {
 
 		std::string thawStatus = "0";
 		if (!db->Put(body["serial"].asString(), thawStatus)) {
-			LOG_ERROR("Failed to thaw the cert (%s), error desc(%s)", body["serial"].asString(), db->error_desc().c_str());
+			LOG_ERROR("Failed to thaw the cert (%s), error desc(%s)", body["serial"].asCString(), db->error_desc().c_str());
 
 		}
 		reply_json["error_desc"] = "";
