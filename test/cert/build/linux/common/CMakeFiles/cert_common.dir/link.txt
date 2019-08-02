@@ -1,2 +1,0 @@
-/usr/bin/ar qc /mnt/e/work/bubi/github/bumo/lib/libcert_common.a  CMakeFiles/cert_common.dir/configure_base.cpp.o CMakeFiles/cert_common.dir/storage.cpp.o CMakeFiles/cert_common.dir/argument.cpp.o
-/usr/bin/ranlib /mnt/e/work/bubi/github/bumo/lib/libcert_common.a

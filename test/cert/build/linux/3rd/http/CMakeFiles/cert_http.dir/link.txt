@@ -1,2 +1,0 @@
-/usr/bin/ar qc /mnt/e/work/bubi/github/bumo/lib/libcert_http.a  CMakeFiles/cert_http.dir/connection.cpp.o CMakeFiles/cert_http.dir/connection_manager.cpp.o CMakeFiles/cert_http.dir/HttpClient.cpp.o CMakeFiles/cert_http.dir/io_service_pool.cpp.o CMakeFiles/cert_http.dir/reply.cpp.o CMakeFiles/cert_http.dir/request_parser.cpp.o CMakeFiles/cert_http.dir/server.cpp.o
-/usr/bin/ranlib /mnt/e/work/bubi/github/bumo/lib/libcert_http.a
